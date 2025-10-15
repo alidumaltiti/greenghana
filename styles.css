@@ -56,7 +56,7 @@ body.dark-mode {
 .font-script { font-family: 'Dancing Script', cursive; }
 
 .hero-bg {
-    background: linear-gradient(rgba(45, 80, 22, 0.3), rgba(139, 69, 19, 0.3)), url('resources/hero-ghana-landscape.png');
+    background: linear-gradient(rgba(45, 80, 22, 0.3), rgba(139, 69, 19, 0.3)), url('hero-ghana-landscape.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
