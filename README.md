@@ -35,7 +35,7 @@ This project is a web application designed to promote green skills, sustainable 
 
 *   **HTML5**
 *   **CSS3** with **Tailwind CSS** for styling.
-*   **JavaScript** for interactivity, with the following libraries:
+*   **JavaScript** for interactivity
 
 ## Author
 
