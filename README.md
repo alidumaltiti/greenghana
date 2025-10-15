@@ -1,4 +1,3 @@
-# greenghana
 # Green Ghana Site
 
 This project is a web application designed to promote green skills, sustainable practices, and climate resilience in Ghana. It serves as an educational and informational hub for individuals interested in contributing to a sustainable future for Ghana.
@@ -10,20 +9,6 @@ This project is a web application designed to promote green skills, sustainable 
 *   **Skills Assessment:** An interactive quiz to help users identify their green skills potential.
 *   **Impact Calculator:** A tool to calculate the positive environmental impact of various green activities.
 *   **Resources:** A curated list of online courses, green job opportunities, and a map of sustainability initiatives in Ghana.
-
-## Getting Started
-
-To get a local copy up and running, follow these simple steps:
-
-1.  Clone the repository:
-    ```sh
-    git clone https://github.com/your_username/your_repository.git
-    ```
-2.  Navigate to the project directory:
-    ```sh
-    cd "Green Ghana Site"
-    ```
-3.  Open the `index.html` file in your web browser.
 
 ## Project Structure
 
