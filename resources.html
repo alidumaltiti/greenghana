@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Resources & Initiatives - Green Skills Ghana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest-green: #2D5016;
+            --earth-brown: #8B4513;
+            --sunset-orange: #FF6B35;
+            --savannah-gold: #DAA520;
+            --cream-white: #FFF8DC;
+            --charcoal: #2F2F2F;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--cream-white);
+            color: var(--charcoal);
+        }
+        .font-display { font-family: 'Playfair Display', serif; }
+        .glass-nav, .search-box { backdrop-filter: blur(5px); }
+        .glass-nav {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 248, 220, 0.9);
+            border-bottom: 1px solid rgba(45, 80, 22, 0.1);
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--sunset-orange);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .btn-primary {
+            background: var(--forest-green);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: var(--earth-brown);
+        }
+        .resource-card {
+            background: white;
+            border: 1px solid rgba(45, 80, 22, 0.1);
+            transition: all 0.3s ease;
+        }
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(45, 80, 22, 0.15);
+        }
+        .footer-bg {
+            background: var(--charcoal);
+        }
+        .map-container {
+            height: 500px;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(45, 80, 22, 0.2);
+            transition: all 0.3s ease;
+        }
+        .filter-btn.active {
+            background: var(--forest-green);
+            color: white;
+            border-color: var(--forest-green);
+        }
+        .filter-btn:hover {
+            border-color: var(--sunset-orange);
+            background: rgba(255, 107, 53, 0.1);
+        }
+        .search-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(45, 80, 22, 0.1);
+            transition: all 0.3s ease;
+        }
+        .search-box:focus-within {
+            border-color: var(--forest-green);
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full top-0 z-50 py-4">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🌱</span>
+                    </div>
+                    <span class="font-display text-2xl font-bold text-[--forest-green]">Green Ghana</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link font-medium">Home</a>
+                    <a href="About.html" class="nav-link font-medium dark-nav-text">About</a>
+                    <a href="assessment.html" class="nav-link font-medium">Assessment</a>
+                    <a href="calculator.html" class="nav-link font-medium">Calculator</a>
+                    <a href="resources.html" class="nav-link font-medium text-orange-500">Resources</a>
+                    <button onclick="window.location.href='index.html'" class="btn-primary px-6 py-2 rounded-full font-medium">Back to Home</button>
+                </div>
+                <!-- Hamburger Menu -->
+                <div class="md:hidden">
+                    <button id="hamburger-btn" class="text-2xl text-[--forest-green]">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+                <a href="index.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Home</a>
+                <a href="About.html" class="nav-link font-medium dark-nav-text">About</a>
+                <a href="assessment.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Assessment</a>
+                <a href="calculator.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Calculator</a>
+                <a href="resources.html" class="block py-2 px-4 text-sm bg-green-100 text-green-800 rounded">Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h1 class="font-display text-5xl font-bold mb-6 text-[--forest-green]">Green Resources & Initiatives</h1>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Your gateway to green skills, knowledge, and opportunities in Ghana.</p>
+            </div>
+
+            <!-- Interactive Map Section -->
+            <section class="mb-16">
+                <div class="resource-card rounded-2xl p-8">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
+                        <div>
+                            <h2 class="font-display text-3xl font-bold mb-4 text-[--forest-green]">
+                                Ghana And Africa Green Initiatives Map
+                            </h2>
+                            <p class="text-gray-600">
+                                Explore green projects, training centers, and opportunities across Ghana and the entire Arican Continent
+                            </p>
+                        </div>
+                        
+                        <!-- Search and Filter -->
+                        <div class="mt-6 lg:mt-0 space-y-4">
+                            <div class="search-box rounded-lg p-3">
+                                <input type="text" id="search-input" placeholder="Search initiatives..." 
+                                       class="w-full bg-transparent border-0 focus:outline-none">
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2">
+                                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium active" data-category="all">
+                                    All
+                                </button>
+                                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium" data-category="renewable">
+                                    Renewable Energy
+                                </button>
+                                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium" data-category="training">
+                                    Training Centers
+                                </button>
+                                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium" data-category="conservation">
+                                    Conservation
+                                </button>
+                                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium" data-category="agriculture">
+                                    Agriculture
+                                </button>
+                                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium" data-category="waste">
+                                    Waste Management
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Map -->
+                    <div id="map" class="map-container"></div>
+                    
+                    <!-- Map Legend -->
+                    <div class="mt-6 flex flex-wrap justify-center gap-4">
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-yellow-500 rounded-full mr-2"></div>
+                            <span class="text-sm">Renewable Energy</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-blue-500 rounded-full mr-2"></div>
+                            <span class="text-sm">Training Centers</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+                            <span class="text-sm">Conservation</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-orange-500 rounded-full mr-2"></div>
+                            <span class="text-sm">Agriculture</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-purple-500 rounded-full mr-2"></div>
+                            <span class="text-sm">Waste Management</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Online Courses Section -->
+            <section class="mb-16">
+                <h2 class="font-display text-4xl font-bold text-center mb-8 text-[--forest-green]">Free Online Courses</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Renewable Energy -->
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-2xl font-bold mb-4 text-[--forest-green]">Renewable Energy</h3>
+                        <img src="resources/Renewable Energy.jpg" alt="Renewable Energy Courses" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <ul class="space-y-3 text-gray-700">
+                            <li><a href="https://www.unitar.org/free-and-open-source-learning-resources" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">UNITAR: Renewable Energy Courses</a></li>
+                            <li><a href="https://www.alison.com/courses/renewable-energy" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Alison: Free Diploma in Renewable Energy</a></li>
+                            <li><a href="https://www.solarenergy.org/courses/introduction-to-renewable-energy/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">SEI: Introduction to Renewable Energy</a></li>
+                            <li><a href="https://www.coursera.org/courses?query=renewable%20energy" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Coursera – Renewable Energy Courses & Certificates</a></li>
+                            <li><a href="https://www.douglashollis.com/best-renewable-energy-course-training-class-tutorial-certification-online/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Douglas Hollis – 10 Best Renewable Energy Courses</a></li>
+                            <li><a href="https://nineplanets.org/guide/best-renewable-energy-courses/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Nine Planets – Renewable Energy Course Guide</a></li>
+                            <li><a href="https://www.edx.org/learn/renewable-energy" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">edX – Learn Renewable Energy</a></li>
+                            <li><a href="https://www.udemy.com/topic/renewable-energy/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Udemy – Renewable Energy Courses</a></li>
+                            <li><a href="https://www.futurelearn.com/subjects/nature-and-environment-courses/renewable-energy" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">FutureLearn – Renewable Energy Learning Path</a></li>
+                            <li><a href="https://www.solarenergy.org/training-solar-pv/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Solar Energy International – Solar PV Training</a></li>
+                            <li><a href="https://www.renewableenergyinstitute.net/training-courses/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Renewable Energy Institute – Accredited Training</a></li>
+                            <li><a href="https://www.energy.gov/eere/education/education-and-workforce-development" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">U.S. Department of Energy – Renewable Energy Education</a></li>
+                            <li><a href="https://www.open.edu/openlearn/science-maths-technology/engineering-technology/renewable-energy" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">OpenLearn – Free Renewable Energy Courses</a></li>
+                        </ul>
+                    </div>
+                    <!-- Sustainable Agriculture -->
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-2xl font-bold mb-4 text-[--forest-green]">Sustainable Agriculture</h3>
+                        <img src="resources/Sustainable Agriculture.jpg" alt="Sustainable Agriculture Courses" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <ul class="space-y-3 text-gray-700">
+                            <li><a href="https://www.fao.org/agroecology/knowledge/learning/en/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">FAO: Agroecology Learning Hub</a></li>
+                            <li><a href="https://www.coursera.org/learn/sustainable-agriculture" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Coursera: Sustainable Agricultural Land Management</a></li>
+                            <li><a href="https://critacghana.com/course-category/free-courses/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Critac Ghana: Free Sustainable Agriculture Course</a></li>
+                            <li><a href="https://critacghana.com/course-category/free-courses/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Critac Ghana: Free Sustainable Agriculture Course</a></li>
+                            <li><a href="https://www.classcentral.com/subject/sustainable-agriculture" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Class Central – 200+ Sustainable Agriculture Courses</a></li>
+                            <li><a href="https://www.coursera.org/courses?query=agriculture" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Coursera – Agriculture & Sustainability Certificates</a></li>
+                            <li><a href="https://trainingcred.com/agribusiness-sustainability/courses/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">TrainingCred – Agribusiness Sustainability Training</a></li>
+                            <li><a href="https://www.edx.org/learn/agriculture" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">edX – Agriculture & Sustainable Development Courses</a></li>
+                            <li><a href="https://www.futurelearn.com/subjects/nature-and-environment-courses/agriculture" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">FutureLearn – Sustainable Agriculture Learning Path</a></li>
+                            <li><a href="https://www.open.edu/openlearn/science-maths-technology/engineering-technology/sustainable-agriculture" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">OpenLearn – Free Sustainable Agriculture Courses</a></li>
+                            <li><a href="https://www.udemy.com/topic/sustainable-agriculture/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Udemy – Sustainable Agriculture Courses</a></li>
+                            <li><a href="https://www.nal.usda.gov/legacy/education/sustainable-agriculture-education-and-training-directory" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">USDA – Sustainable Agriculture Education Directory</a></li>
+                            <li><a href="https://www.permaculture.org.uk/education/course-list" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Permaculture Association – Sustainable Farming Courses</a></li>
+                            <li><a href="https://www.sabaa.education" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">SABAA.education – Circular Agriculture & Sustainability</a></li>
+                        </ul>
+                    </div>
+                    <!-- Waste Management -->
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-2xl font-bold mb-4 text-[--forest-green]">Waste Management</h3>
+                        <img src="resources/Waste Management.jpg" alt="Waste Management Courses" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <ul class="space-y-3 text-gray-700">
+                            <li><a href="https://www.coursera.org/learn/solid-waste-management" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Coursera: Municipal Solid Waste Management</a></li>
+                            <li><a href="https://www.alison.com/course/solid-waste-management" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Alison: Solid Waste Management</a></li>
+                            <li><a href="https://www.classcentral.com/subject/waste-management" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Class Central – 200+ Waste Management Courses</a></li>
+                            <li><a href="https://www.udemy.com/topic/waste-management/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Udemy – Waste Management Courses & Certifications</a></li>
+                            <li><a href="https://www.careers360.com/courses-certifications/waste-management-courses-brpg" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Careers360 – Best Waste Management Courses 2025</a></li>
+                            <li><a href="https://www.edx.org/learn/environmental-science" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">edX – Environmental Science & Waste Management</a></li>
+                            <li><a href="https://www.coursera.org/courses?query=waste%20management" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Coursera – Waste Management & Circular Economy</a></li>
+                            <li><a href="https://www.futurelearn.com/courses/sustainable-waste-management" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">FutureLearn – Sustainable Waste Management</a></li>
+                            <li><a href="https://www.open.edu/openlearn/science-maths-technology/environmental-science/sustainable-waste-management" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">OpenLearn – Free Waste Management Courses</a></li>
+                            <li><a href="https://www.renewableenergyinstitute.net/training-courses/" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">Renewable Energy Institute – Waste & Energy Training</a></li>
+                            <li><a href="https://www.swayam.gov.in/explorer?category=Waste%20Management" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">SWAYAM – Waste Management Courses (India)</a></li>
+                            <li><a href="https://www.unep.org/resources/training" class="hover:text-[--sunset-orange]" target="_blank" rel="noopener">UNEP – Waste & Pollution Training Resources</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Green Learning Paths Section -->
+
+            <section class="mb-16">
+                <h2 class="font-display text-4xl font-bold text-center mb-8 text-[--forest-green]">Green Learning Paths</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="resource-card rounded-2xl p-6">
+                        <img src="resources/INCO Academy – Green Pathways.jpg" alt="INCO Academy Green Pathways" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">INCO Academy – Green Pathways</h3>
+                        <p class="text-gray-600 mb-4">Free online program offering climate and sustainability skills with mentorship and live sessions.</p>
+                        <a href="https://greenpathways.inco-group.co" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                        <img src="resources/Climate Job Training – Green Jobs Network.jpg" alt="Climate Job Training" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Climate Job Training – Green Jobs Network</h3>
+                        <p class="text-gray-600 mb-4">Curated list of green job training programs in clean energy, climate resilience, and sustainability.</p>
+                        <a href="https://www.climatejobtraining.com" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                        <img src="resources/SABAA.education.jpg" alt="SABAA Education" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">SABAA.education</h3>
+                        <p class="text-gray-600 mb-4">Africa-based platform offering circular economy and sustainability education for Sub-Saharan learners.</p>
+                        <a href="https://www.sabaa.education" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                        <img src="https://ugc.futurelearn.com/uploads/images/33/21/33217874-8ab7-40c7-92b6-4e4b546f851b.jpg" alt="UN SDG Learn" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">UN SDG: Learn</h3>
+                        <p class="text-gray-600 mb-4">Free courses aligned with the UN Sustainable Development Goals including climate action and biodiversity.</p>
+                        <a href="https://www.unsdglearn.org" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                        <img src="resources/Solar Energy International (SEI).png" alt="Solar Energy International" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Solar Energy International (SEI)</h3>
+                        <p class="text-gray-600 mb-4">Offers online and in-person training in solar PV and renewable energy systems with certifications.</p>
+                        <a href="https://www.solarenergy.org" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                        <img src="resources/The Nature Conservancy – Conservation Training.png" alt="Nature Conservancy Training" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">The Nature Conservancy – Conservation Training</h3>
+                        <p class="text-gray-600 mb-4">Free courses on conservation, climate adaptation, and ecosystem services for global learners.</p>
+                        <a href="https://www.conservationtraining.org" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <!--Still to add images-->
+
+            
+                    <div class="resource-card rounded-2xl p-6">
+                         <img src="resources/Coursera – Climate & Sustainabilit.png" alt="Climate $ Sustainability" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Coursera – Climate & Sustainability</h3>
+                        <p class="text-gray-600 mb-4">Courses from top universities covering climate science, sustainable agriculture, and green business.</p>
+                        <a href="https://www.coursera.org" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                         <img src="resources/edX – Environmental & Sustainability Programs.jpg" alt="Environment and Sustainability Programs" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">edX – Environmental & Sustainability Programs</h3>
+                        <p class="text-gray-600 mb-4">Professional certificates and microdegrees from Harvard, MIT, and others in sustainability topics.</p>
+                        <a href="https://www.edx.org" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <img src="resources/FutureLearn – Climate and Nature Courses.jpg" alt="Climate and Nature Courses" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">FutureLearn – Climate and Nature Courses</h3>
+                        <p class="text-gray-600 mb-4">UK-based platform offering global courses in climate justice, biodiversity, and sustainability.</p>
+                        <a href="https://www.futurelearn.com" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+                        
+                    <div class="resource-card rounded-2xl p-6">
+                        <img src="resources/Youth Climate Lab.png" alt="Youth Climate Lab" class="w-full h-48 object-cover rounded-xl mb-4" />
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Youth Climate Lab</h3>
+                        <p class="text-gray-600 mb-4">Empowers youth through fellowships, labs, and training for climate innovation and green skills.</p>
+                        <a href="https://www.youthclimatelab.org" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+            </section>
+            <!-- Books & Publications Section -->
+
+            <section class="mb-16">
+                <h2 class="font-display text-4xl font-bold text-center mb-8 text-[--forest-green]">Books & Publications</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"The Green Collar Economy" by Van Jones</h3>
+                        <p class="text-gray-600 mb-4">Explores how green jobs can drive economic growth and social equity.</p>
+                        <a href="https://www.amazon.com/Green-Collar-Economy-Van-Jones/dp/0061732645" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Buy on Amazon</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Sustainable Energy – Without the Hot Air" by David JC MacKay</h3>
+                        <p class="text-gray-600 mb-4">A comprehensive guide to sustainable energy solutions and technologies.</p>
+                        <a href="https://www.withouthotair.com/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read Online</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"The Omnivore's Dilemma" by Michael Pollan</h3>
+                        <p class="text-gray-600 mb-4">Investigates the environmental and ethical implications of food choices.</p>
+                        <a href="https://www.amazon.com/Omnivores-Dilemma-Michael-Pollan/dp/0143038583" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Buy on Amazon</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Cradle to Cradle" by William McDonough & Michael Braungart</h3>
+                        <p class="text-gray-600 mb-4">Presents a visionary framework for sustainable design and production.</p>
+                        <a href="https://www.amazon.com/Cradle-McDonough-Braungart/dp/0865475873" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Buy on Amazon</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"This Changes Everything" by Naomi Klein</h3>
+                        <p class="text-gray-600 mb-4">Examines the intersection of capitalism and climate change, advocating for systemic change.</p>
+                        <a href="https://www.amazon.com/This-Changes-Everything-Capitalism-Climate/dp/1451697392" class="text-[--   sunset-orange] font-semibold" target="_blank" rel="noopener">Buy on Amazon</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"The Sixth Extinction" by Elizabeth Kolbert</h3>
+                        <p class="text-gray-600 mb-4">Explores the ongoing mass extinction caused by human activity.</p>
+                        <a href="https://www.amazon.com/Sixth-Extinction-Unnatural-History/dp/1250062187" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Buy on Amazon</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Doughnut Economics" by Kate Raworth</h3>
+                        <p class="text-gray-600 mb-4">Introduces a new economic model that balances human needs with planetary boundaries.</p>
+                        <a href="https://www.amazon.com/Doughnut-Economics-Seven-Ways-Think/dp/1603586741" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Buy on Amazon</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"The Uninhabitable Earth" by David Wallace-Wells</h3>
+                        <p class="text-gray-600 mb-4">A stark warning about the future impacts of climate change if urgent action is not taken.</p>
+                        <a href="https://www.amazon.com/Uninhabitable-Earth-Life-After-Warming/dp/0525576703" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Buy on Amazon</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Climate Change and Cities" by Cynthia Rosenzweig et al.</h3>
+                    <p class="text-gray-600 mb-4">A comprehensive guide to urban climate adaptation strategies from the Urban Climate Change Research Network.</p>
+                    <a href="https://uccrn.ei.columbia.edu/sites/default/files/content/pubs/ARC3.2-Cities-Climate-Change-Second-Assessment-Full.pdf" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read Free PDF</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Renewable Energy: Power for a Sustainable Future" by Godfrey Boyle</h3>
+                    <p class="text-gray-600 mb-4">An open-access textbook covering solar, wind, hydro, and bioenergy systems.</p>
+                    <a href="https://archive.org/details/renewableenergyp0000unse" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Sustainable Development: Understanding the Green Economy" by Jennifer Elliott</h3>
+                    <p class="text-gray-600 mb-4">Explores the social, economic, and environmental pillars of sustainability.</p>
+                    <a href="https://www.infobooks.org/free-pdf-books/various-topics/sustainable-development/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Free PDF Collection</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Environmental Science: A Global Concern" by Cunningham & Cunningham</h3>
+                    <p class="text-gray-600 mb-4">A foundational text on environmental systems, pollution, and sustainability practices.</p>
+                    <a href="https://archive.org/details/environmentalscienceaglobalconcern" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Waste Management Practices" by John Pichtel</h3>
+                    <p class="text-gray-600 mb-4">Covers solid waste, hazardous waste, and recycling systems in urban and rural settings.</p>
+                    <a href="https://archive.org/details/wastemanagementp0000pich" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Permaculture: Principles and Pathways Beyond Sustainability" by David Holmgren</h3>
+                    <p class="text-gray-600 mb-4">A foundational text on regenerative agriculture and ecological design.</p>
+                    <a href="https://archive.org/details/permacultureprinciplesandpathwaysbeyondsustainability" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"The Circular Economy Handbook" by Peter Lacy et al.</h3>
+                    <p class="text-gray-600 mb-4">A practical guide to circular business models and sustainable innovation.</p>
+                    <a href="https://archive.org/details/circular-economy-handbook" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Climate Change and Human Health" by Kristie L. Ebi et al.</h3>
+                    <p class="text-gray-600 mb-4">Explores the health impacts of climate change and adaptation strategies.</p>
+                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK531453/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on NCBI</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Sustainable Agriculture and Food Security" by Vandana Shiva</h3>
+                    <p class="text-gray-600 mb-4">A critical look at industrial agriculture and the need for agroecological alternatives.</p>
+                    <a href="https://archive.org/details/sustainableagriculturevandana" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Energy for Sustainable Development" by Thomas B. Johansson</h3>
+                    <p class="text-gray-600 mb-4">Analyzes global energy systems and pathways toward sustainability.</p>
+                    <a href="https://www.osti.gov/etdeweb/servlets/purl/20407763" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read via OSTI</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Introduction to Environmental Science" by OpenStax</h3>
+                    <p class="text-gray-600 mb-4">A free college-level textbook covering ecosystems, pollution, climate change, and sustainability.</p>
+                    <a href="https://openstax.org/books/environmental-science/pages/1-introduction" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read Free Online</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Agroecology: The Ecology of Sustainable Food Systems" by Stephen R. Gliessman</h3>
+                    <p class="text-gray-600 mb-4">Explores ecological principles applied to agriculture and food systems.</p>
+                    <a href="https://archive.org/details/agroecologyecologyofsustainablefoodsystems" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"The Energy Reader" by Worldwatch Institute</h3>
+                    <p class="text-gray-600 mb-4">A collection of essays on global energy challenges and sustainable solutions.</p>
+                    <a href="https://archive.org/details/energyreaderworldwatch" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Zero Waste Home" by Bea Johnson</h3>
+                    <p class="text-gray-600 mb-4">A practical guide to reducing household waste and living sustainably.</p>
+                    <a href="https://archive.org/details/zerowastehomeultimateguide" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"The Transition Handbook" by Rob Hopkins</h3>
+                    <p class="text-gray-600 mb-4">Outlines community-led responses to climate change and peak oil through local resilience.</p>
+                    <a href="https://archive.org/details/transitionhandbookfromoil" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Sustainable Energy – Without the Hot Air" by David J.C. MacKay</h3>
+                    <p class="text-gray-600 mb-4">A data-driven look at energy choices and how to power the planet sustainably.</p>
+                    <a href="https://www.withouthotair.com/download.html" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Download Free PDF</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"The Soil Will Save Us" by Kristin Ohlson</h3>
+                    <p class="text-gray-600 mb-4">Explores how regenerative agriculture and soil health can combat climate change.</p>
+                    <a href="https://archive.org/details/soilwillsaveushow" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Designing Regenerative Cultures" by Daniel Christian Wahl</h3>
+                    <p class="text-gray-600 mb-4">A visionary guide to creating resilient, regenerative societies and ecosystems.</p>
+                    <a href="https://archive.org/details/designingregenerativecultures" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"The Ecology of Commerce" by Paul Hawken</h3>
+                    <p class="text-gray-600 mb-4">Proposes a new model for business that restores ecosystems and supports sustainability.</p>
+                    <a href="https://archive.org/details/ecologyofcommerce" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">"Drawdown: The Most Comprehensive Plan Ever Proposed to Reverse Global Warming" by Paul Hawken</h3>
+                    <p class="text-gray-600 mb-4">A ranked list of climate solutions based on scientific research and global impact.</p>
+                    <a href="https://archive.org/details/drawdownhawken" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Read on Archive.org</a>
+                    </div>
+
+
+
+            </section>
+
+            <!-- Government & NGOs Section -->
+            <section class="mb-16">
+                <h2 class="font-display text-4xl font-bold text-center mb-8 text-[--forest-green]">Government & NGOs</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Environmental Protection Agency (EPA) Ghana</h3>
+                        <p class="text-gray-600 mb-4">Ghana's lead agency for environmental protection and regulation.</p>
+                        <a href="http://www.epa.gov.gh" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Energy Commission, Ghana</h3>
+                        <p class="text-gray-600 mb-4">Regulator of Ghana's energy sector, promoting renewable energy.</p>
+                        <a href="https://www.energycom.gov.gh" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">A Rocha Ghana</h3>
+                        <p class="text-gray-600 mb-4">A leading environmental NGO in Ghana, focused on conservation.</p>
+                        <a href="https://ghana.arocha.org/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Environmental Protection Agency (EPA) Ghana</h3>
+                    <p class="text-gray-600 mb-4">Ghana's lead agency for environmental protection and regulation.</p>
+                    <a href="http://www.epa.gov.gh" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">UNDP Ghana – Waste Management Grants</h3>
+                    <p class="text-gray-600 mb-4">Supports integrated waste management and circular economy education in Ghana.</p>
+                    <a href="https://www.advance-africa.com/UNDP-Waste-Management-Funding-in-Ghana.html" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">GlobalGiving – Sustainable Agriculture Projects</h3>
+                    <p class="text-gray-600 mb-4">Connects donors with grassroots NGOs promoting sustainable farming and climate action.</p>
+                    <a href="https://www.globalgiving.org/themes/sustainable-agriculture/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Alliance for a Green Revolution in Africa (AGRA)</h3>
+                    <p class="text-gray-600 mb-4">Empowers African farmers through sustainable agriculture and education grants.</p>
+                    <a href="https://www.kenpro.org/major-donor-agencies-funding-agriculture/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Rainforest Alliance</h3>
+                    <p class="text-gray-600 mb-4">Provides sustainability training for agriculture, forestry, and tourism sectors.</p>
+                    <a href="https://www.rainforest-alliance.org/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Greenpeace</h3>
+                    <p class="text-gray-600 mb-4">Global NGO offering climate education and environmental advocacy resources.</p>
+                    <a href="https://www.greenpeace.org/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Sea Shepherd Conservation Society</h3>
+                    <p class="text-gray-600 mb-4">Marine conservation NGO offering educational outreach on ocean sustainability.</p>
+                    <a href="https://www.seashepherd.org/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">UNEP – Environmental Education & Training</h3>
+                    <p class="text-gray-600 mb-4">United Nations Environment Programme offering global sustainability learning resources.</p>
+                    <a href="https://www.unep.org/resources/training" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">SABAA.education</h3>
+                    <p class="text-gray-600 mb-4">Africa-based NGO offering circular economy and sustainability education.</p>
+                    <a href="https://www.sabaa.education" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Solar Energy International (SEI)</h3>
+                    <p class="text-gray-600 mb-4">Nonprofit offering renewable energy training and certifications worldwide.</p>
+                    <a href="https://www.solarenergy.org" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Renewable Energy Institute</h3>
+                    <p class="text-gray-600 mb-4">Provides accredited training in renewable energy and sustainability technologies.</p>
+                    <a href="https://www.renewableenergyinstitute.net/training-courses/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">UN SDG: Learn</h3>
+                    <p class="text-gray-600 mb-4">UN platform offering free courses aligned with Sustainable Development Goals.</p>
+                    <a href="https://www.unsdglearn.org" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Youth Climate Lab</h3>
+                    <p class="text-gray-600 mb-4">Empowers youth through climate innovation labs and green skills training.</p>
+                    <a href="https://www.youthclimatelab.org" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Our Aim Foundation</h3>
+                    <p class="text-gray-600 mb-4">Advocates for global education access and sustainability learning programs.</p>
+                    <a href="https://ouraim.org/ngos-advocating-for-the-right-to-education-globally/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Donorbox – Renewable Energy Nonprofits</h3>
+                    <p class="text-gray-600 mb-4">Highlights top nonprofits leading climate action and clean energy education.</p>
+                    <a href="https://donorbox.org/nonprofit-blog/renewable-energy-nonprofits" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">EcoHubMap – Waste NGOs Directory</h3>
+                    <p class="text-gray-600 mb-4">Global directory of nonprofits focused on recycling, composting, and waste education.</p>
+                    <a href="https://www.ecohubmap.com/list/NGO/waste/all" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+                    <div class="resource-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">FundsforNGOs – Environmental Grants</h3>
+                    <p class="text-gray-600 mb-4">Comprehensive list of grants for environmental and sustainability projects.</p>
+                    <a href="https://www.fundsforngos.org/ngo-funding/environmental-grants/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+
+            </section>
+
+            <!-- Green Job Portals -->
+            <section class="mb-16">
+                <h2 class="font-display text-4xl font-bold text-center mb-8 text-[--forest-green]">Green Job Portals</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">Ghana Job Bank</h3>
+                        <p class="text-gray-600 mb-4">Search for environmental and green jobs in Ghana.</p>
+                        <a href="https://ghanajobbank.com/" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+                    <div class="resource-card rounded-2xl p-6">
+                        <h3 class="font-display text-xl font-bold mb-2 text-[--forest-green]">SNV GrEEn Project</h3>
+                        <p class="text-gray-600 mb-4">Boosting Green Employment and Enterprise Opportunities in Ghana.</p>
+                        <a href="https://snv.org/project/green-boosting-green-employment-and-enterprise-opportunities-ghana" class="text-[--sunset-orange] font-semibold" target="_blank" rel="noopener">Visit Website</a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 footer-bg">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🌱</span>
+                    </div>
+                    <span class="font-display text-2xl font-bold text-white">Green Ghana</span>
+                </div>
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">Empowering Ghana's communities with green skills, sustainable practices, and climate resilience for a prosperous future.</p>
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-500 text-sm">© 2025 Green Ghana. Building sustainable futures together.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Map initialization
+        let map;
+        let markers = [];
+        
+        // Green initiatives data
+        const initiatives = [
+            // Renewable Energy
+            {
+                name: "Bui Solar Power Plant",
+                lat: 8.2833,
+                lng: -2.4833,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "Large-scale solar installation generating clean energy for the national grid.",
+                contact: "info@buipower.com",
+                website: "www.buipower.com"
+            },
+            {
+                name: "Green Fund Africa - Accra",
+                lat: 5.6037,
+                lng: -0.1870,
+                category: "training",
+                type: "Training Center",
+                description: "Clean energy education and innovation accelerator for youth and women.",
+                contact: "info@greenfundafrica.org",
+                website: "www.greenfundafrica.org"
+            },
+            {
+                name: "Kumasi Technical University",
+                lat: 6.6667,
+                lng: -1.6167,
+                category: "training",
+                type: "University",
+                description: "Green skills curriculum and hydrogen technology training programs.",
+                contact: "info@ktu.edu.gh",
+                website: "www.ktu.edu.gh"
+            },
+            {
+                name: "Bolgatanga Technical University",
+                lat: 10.7856,
+                lng: -0.8514,
+                category: "training",
+                type: "University",
+                description: "Green technologies and sustainable development education programs.",
+                contact: "info@btu.edu.gh",
+                website: "www.btu.edu.gh"
+            },
+            {
+                name: "Mole National Park",
+                lat: 9.5833,
+                lng: -1.8333,
+                category: "conservation",
+                type: "National Park",
+                description: "Wildlife conservation and eco-tourism in Ghana's largest national park.",
+                contact: "info@molepark.com",
+                website: "www.molepark.com"
+            },
+            {
+                name: "Kakum Conservation Area",
+                lat: 5.3600,
+                lng: -1.3300,
+                category: "conservation",
+                type: "Forest Reserve",
+                description: "Tropical forest conservation and canopy walkway eco-tourism.",
+                contact: "info@kakumpark.com",
+                website: "www.kakumpark.com"
+            },
+            {
+                name: "Tono Irrigation Project",
+                lat: 10.8500,
+                lng: -1.1000,
+                category: "agriculture",
+                type: "Irrigation Scheme",
+                description: "Large-scale irrigation supporting climate-smart agriculture.",
+                contact: "info@tonoirrigation.gov.gh",
+                website: "www.tonoirrigation.gov.gh"
+            },
+            {
+                name: "Accra Recycling Center",
+                lat: 5.6037,
+                lng: -0.1870,
+                category: "waste",
+                type: "Recycling Facility",
+                description: "Comprehensive waste management and recycling services for Greater Accra.",
+                contact: "info@accrawaste.gov.gh",
+                website: "www.accrawaste.gov.gh"
+            },
+            {
+                name: "Ashaiman Waste-to-Energy",
+                lat: 5.8170,
+                lng: -0.0280,
+                category: "waste",
+                type: "Waste-to-Energy Plant",
+                description: "Converting municipal waste into clean energy for the community.",
+                contact: "info@ashaimanwte.com",
+                website: "www.ashaimanwte.com"
+            },
+            {
+                name: "Ghana Bamboo Project",
+                lat: 6.1500,
+                lng: -0.2667,
+                category: "agriculture",
+                type: "Bamboo Plantation",
+                description: "Sustainable bamboo cultivation for construction and carbon sequestration.",
+                contact: "info@ghanabamboo.com",
+                website: "www.ghanabamboo.com"
+            },
+            {
+                name: "Navrongo Solar Demonstration",
+                lat: 10.8833,
+                lng: -1.1000,
+                category: "renewable",
+                type: "Solar Research",
+                description: "Solar energy research and demonstration facility in Northern Ghana.",
+                contact: "info@navrongosolar.org",
+                website: "www.navrongosolar.org"
+            },
+            {
+                name: "Cape Coast Green Hub",
+                lat: 5.1000,
+                lng: -1.2500,
+                category: "training",
+                type: "Green Innovation Hub",
+                description: "Incubator for green startups and sustainable technology development.",
+                contact: "info@capecoastgreenhub.org",
+                website: "www.capecoastgreenhub.org"
+            },
+            {
+                name: "Tamale Organic Farming Cooperative",
+                lat: 9.4000,
+                lng: -0.8500,
+                category: "agriculture",
+                type: "Organic Farming",
+                description: "Cooperative promoting organic farming and sustainable agriculture practices.",
+                contact: "info@tamaleorganic.org",
+                website: "www.tamaleorganic.org"
+            },
+            {
+                name: "Tema Industrial Waste Management",
+                lat: 5.6667,
+                lng: 0.0167,
+                category: "waste",
+                type: "Industrial Waste Treatment",
+                description: "Advanced waste treatment and recycling for industrial zones.",
+                contact: "info@temawaste.com",
+                website: "www.temawaste.com"
+            },
+            {
+                name: "Ankasa Conservation Area",
+                lat: 5.2167,
+                lng: -2.7500,
+                category: "conservation",
+                type: "Forest Reserve",
+                description: "Biodiversity hotspot and tropical forest conservation project.",
+                contact: "info@ankasaconservation.org",
+                website: "www.ankasaconservation.org"
+            },
+            {
+                name: "Savelugu Solar Mini-Grid",
+                lat: 9.9000,
+                lng: -0.8333,
+                category: "renewable",
+                type: "Solar Mini-Grid",
+                description: "Rural solar mini-grid providing clean electricity to off-grid communities.",
+                contact: "info@savelugusolar.org",
+                website: "www.savelugusolar.org"
+            },
+            {
+                name: "Ejura Agroforestry Project",
+                lat: 7.3500,
+                lng: -1.7000,
+                category: "agriculture",
+                type: "Agroforestry",
+                description: "Integrating trees into farming systems for sustainability and carbon capture.",
+                contact: "info@ejuraagroforestry.com",
+                website: "www.ejuraagroforestry.com"
+            },
+            {
+                name: "Keta Lagoon Biodiversity Project",
+                lat: 5.9333,
+                lng: 0.9833,
+                category: "conservation",
+                type: "Wetland Conservation",
+                description: "Protecting the unique biodiversity of the Keta Lagoon ecosystem.",
+                contact: "info@ketalagoon.org",
+                website: "www.ketalagoon.org"
+            },
+            {
+                name: "Wa Solar Training Center",
+                lat: 10.0667,
+                lng: -2.5000,
+                category: "training",
+                type: "Solar Training",
+                description: "Vocational training center specializing in solar energy technologies.",
+                contact: "info@wasolar.org",
+                website: "www.wasolar.org"
+            },
+
+            // Add more initiatives as needed
+
+            {
+                name: "Nzema Solar Power Station",
+                lat: 5.0833,
+                lng: -2.0833,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "One of West Africa’s largest solar farms, powering thousands of homes in Ghana.",
+                contact: "info@blueskiesenergy.com",
+                website: "www.blueskiesenergy.com"
+                },
+                {
+                name: "Lake Turkana Wind Power Project",
+                lat: 2.7833,
+                lng: 36.8333,
+                category: "renewable",
+                type: "Wind Energy",
+                description: "Africa’s largest wind farm located in Kenya, supplying clean energy to the national grid.",
+                contact: "info@ltwp.co.ke",
+                website: "www.ltwp.co.ke"
+                },
+                {
+                name: "Zagtouli Solar Power Plant",
+                lat: 12.3667,
+                lng: -1.5167,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "Burkina Faso’s flagship solar project supporting energy access and grid stability.",
+                contact: "contact@sonabel.bf",
+                website: "www.sonabel.bf"
+                },
+                {
+                name: "Ashegoda Wind Farm",
+                lat: 13.4833,
+                lng: 39.4667,
+                category: "renewable",
+                type: "Wind Energy",
+                description: "Ethiopia’s pioneering wind farm contributing to national renewable energy targets.",
+                contact: "info@eep.gov.et",
+                website: "www.eep.gov.et"
+                },
+                {
+                name: "Kathu Solar Park",
+                lat: -27.7167,
+                lng: 23.0333,
+                category: "renewable",
+                type: "Concentrated Solar Power",
+                description: "South African solar thermal plant using mirrors to generate clean electricity.",
+                contact: "info@engie.com",
+                website: "www.engie.com"
+                },
+                {
+                name: "Noor Ouarzazate Solar Complex",
+                lat: 30.9333,
+                lng: -6.9333,
+                category: "renewable",
+                type: "Solar Thermal",
+                description: "Morocco’s massive solar complex combining PV and CSP technologies.",
+                contact: "contact@masen.ma",
+                website: "www.masen.ma"
+                },
+                {
+                name: "Garissa Solar Power Plant",
+                lat: -0.4667,
+                lng: 39.6333,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "Kenya’s largest grid-connected solar plant supporting rural electrification.",
+                contact: "info@rerec.co.ke",
+                website: "www.rerec.co.ke"
+                },
+                {
+                name: "Aysha Wind Farm",
+                lat: 8.9167,
+                lng: 42.1167,
+                category: "renewable",
+                type: "Wind Energy",
+                description: "Ethiopian wind project enhancing regional energy access and grid reliability.",
+                contact: "info@eep.gov.et",
+                website: "www.eep.gov.et"
+                },
+                {
+                name: "Benban Solar Park",
+                lat: 24.4333,
+                lng: 32.8333,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "Egypt’s mega solar park with multiple developers contributing to clean energy goals.",
+                contact: "info@nrea.gov.eg",
+                website: "www.nrea.gov.eg"
+                },
+                {
+                name: "KivuWatt Methane-to-Power Plant",
+                lat: -1.7833,
+                lng: 29.2333,
+                category: "renewable",
+                type: "Biogas Energy",
+                description: "Rwanda’s innovative plant converting lake methane into electricity.",
+                contact: "info@contourglobal.com",
+                website: "www.contourglobal.com"
+                },
+                {
+                name: "Senergy 2 Solar Plant",
+                lat: 14.7167,
+                lng: -17.4667,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "Senegal’s solar PV plant supporting national energy diversification.",
+                contact: "info@senergy.sn",
+                website: "www.senergy.sn"
+                },
+                {
+                name: "Tarfaya Wind Farm",
+                lat: 27.9333,
+                lng: -12.9333,
+                category: "renewable",
+                type: "Wind Energy",
+                description: "Morocco’s coastal wind farm contributing to national renewable targets.",
+                contact: "contact@masen.ma",
+                website: "www.masen.ma"
+                },
+                {
+                name: "Kigoma Solar Mini-Grid",
+                lat: -4.8833,
+                lng: 29.6333,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "Tanzania’s rural solar mini-grid improving energy access in off-grid communities.",
+                contact: "info@rura.go.tz",
+                website: "www.rura.go.tz"
+                },
+                {
+                name: "Mpanda Hydro Project",
+                lat: -6.3333,
+                lng: 31.0667,
+                category: "renewable",
+                type: "Hydropower",
+                description: "Small-scale hydro project in Tanzania supporting local electrification.",
+                contact: "info@tanpower.go.tz",
+                website: "www.tanpower.go.tz"
+                },
+                {
+                name: "Sankofa Gas-to-Power Project",
+                lat: 4.8833,
+                lng: -1.7167,
+                category: "renewable",
+                type: "Natural Gas (Transitional)",
+                description: "Ghana’s clean energy transition project using natural gas to reduce emissions.",
+                contact: "info@gnpcghana.com",
+                website: "www.gnpcghana.com"
+                },
+                {
+                name: "Solar Sister Initiative",
+                lat: 7.0000,
+                lng: 5.0000,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "Empowering women entrepreneurs to distribute solar lights and clean cookstoves.",
+                contact: "info@solarsister.org",
+                website: "www.solarsister.org"
+                },
+                {
+                name: "PowerGen Renewable Energy Microgrids",
+                lat: -1.2833,
+                lng: 36.8167,
+                category: "renewable",
+                type: "Solar Microgrid",
+                description: "Kenya-based company deploying solar microgrids across East Africa.",
+                contact: "info@powergen-re.com",
+                website: "www.powergen-re.com"
+                },
+                {
+                name: "Desert to Power Initiative",
+                lat: 15.0000,
+                lng: 0.0000,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "Pan-African solar initiative by AfDB to electrify the Sahel region.",
+                contact: "info@afdb.org",
+                website: "www.afdb.org"
+                },
+                {
+                name: "Kakuma Solar Hybrid Plant",
+                lat: 3.7167,
+                lng: 34.8667,
+                category: "renewable",
+                type: "Solar-Diesel Hybrid",
+                description: "Kenya’s hybrid plant powering refugee settlements and host communities.",
+                contact: "info@rerec.co.ke",
+                website: "www.rerec.co.ke"
+                },
+                {
+                name: "Mokoloki Solar Mini-Grid",
+                lat: 7.3833,
+                lng: 3.9333,
+                category: "renewable",
+                type: "Solar Energy",
+                description: "Nigeria’s community-led solar mini-grid improving rural energy access.",
+                contact: "info@rubitec.com.ng",
+                website: "www.rubitec.com.ng"
+                }
+        ];
+
+        // Agricultural initiatives can be added here similarly
+        const agriculturalInitiatives = [
+            // Add agricultural initiatives here
+            {
+            name: "Songhai Center",
+            lat: 6.4333,
+            lng: 2.6167,
+            category: "agriculture",
+            type: "Agroecology",
+            description: "Integrated farming and training center promoting sustainable agriculture in Benin.",
+            contact: "info@songhai.org",
+            website: "www.songhai.org"
+            },
+            {
+            name: "AgriTech Hub Ghana",
+            lat: 9.4000,
+            lng: -0.8333,
+            category: "agriculture",
+            type: "Precision Agriculture",
+            description: "Innovation hub supporting smart farming and youth-led agri-enterprises.",
+            contact: "contact@agritechhubgh.org",
+            website: "www.agritechhubgh.org"
+            },
+            {
+            name: "Biovision Africa Trust",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "agriculture",
+            type: "Organic Farming",
+            description: "Promotes ecological farming and farmer education across East Africa.",
+            contact: "info@biovisionafricatrust.org",
+            website: "www.biovisionafricatrust.org"
+            },
+            {
+            name: "Sokoine University of Agriculture",
+            lat: -6.8333,
+            lng: 37.6667,
+            category: "agriculture",
+            type: "Agricultural Research",
+            description: "Tanzania’s leading agricultural university advancing sustainable farming practices.",
+            contact: "info@sua.ac.tz",
+            website: "www.sua.ac.tz"
+            },
+            {
+            name: "Farm Radio International",
+            lat: 5.5500,
+            lng: -0.2000,
+            category: "agriculture",
+            type: "Agricultural Communication",
+            description: "Uses radio to share climate-smart farming knowledge with rural communities.",
+            contact: "info@farmradio.org",
+            website: "www.farmradio.org"
+            },
+            {
+            name: "Green Innovation Centre Nigeria",
+            lat: 9.0667,
+            lng: 7.4833,
+            category: "agriculture",
+            type: "Agroecology",
+            description: "Supports smallholder farmers with training and sustainable technologies.",
+            contact: "info@gic-nigeria.org",
+            website: "www.gic-nigeria.org"
+            },
+            {
+            name: "African Organic Network (AfrONet)",
+            lat: -6.8167,
+            lng: 39.2833,
+            category: "agriculture",
+            type: "Organic Farming",
+            description: "Regional network promoting organic agriculture and policy advocacy.",
+            contact: "info@afronet.bio",
+            website: "www.afronet.bio"
+            },
+            {
+            name: "Permaculture Research Institute Kenya",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "agriculture",
+            type: "Permaculture",
+            description: "Offers permaculture design courses and community-based farming solutions.",
+            contact: "info@pri-kenya.org",
+            website: "www.pri-kenya.org"
+            },
+            {
+            name: "Ghana Permaculture Institute",
+            lat: 7.3333,
+            lng: -1.0000,
+            category: "agriculture",
+            type: "Permaculture",
+            description: "Trains youth and farmers in regenerative agriculture and sustainable land use.",
+            contact: "info@ghanapermaculture.org",
+            website: "www.ghanapermaculture.org"
+            },
+            {
+            name: "Earth University",
+            lat: 10.0000,
+            lng: -83.0000,
+            category: "agriculture",
+            type: "Sustainable Agriculture Education",
+            description: "International university offering degrees in sustainable agriculture and natural resource management.",
+            contact: "info@earth.ac.cr",
+            website: "www.earth.ac.cr"
+            },
+            {
+            name: "African Centre for Crop Improvement",
+            lat: -29.8667,
+            lng: 30.9833,
+            category: "agriculture",
+            type: "Crop Science",
+            description: "Research center developing climate-resilient crop varieties for African farmers.",
+            contact: "info@acci.org.za",
+            website: "www.acci.org.za"
+            },
+            {
+            name: "Sustainable Agriculture Tanzania (SAT)",
+            lat: -7.0000,
+            lng: 35.0000,
+            category: "agriculture",
+            type: "Agroecology",
+            description: "NGO promoting ecological farming and farmer training in Tanzania.",
+            contact: "info@kilimo.org",
+            website: "www.kilimo.org"
+            },
+            {
+            name: "Green Africa Foundation",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "agriculture",
+            type: "Agroforestry",
+            description: "Promotes tree planting and sustainable land management in Kenya.",
+            contact: "info@greenafricafoundation.org",
+            website: "www.greenafricafoundation.org"
+            },
+            {
+            name: "Uganda National Agroecology Actors",
+            lat: 0.3136,
+            lng: 32.5811,
+            category: "agriculture",
+            type: "Agroecology",
+            description: "Coalition advancing agroecology through policy and farmer engagement.",
+            contact: "info@unaa.org",
+            website: "www.unaa.org"
+            },
+            {
+            name: "AgriProFocus Network",
+            lat: 52.3702,
+            lng: 4.8952,
+            category: "agriculture",
+            type: "Agricultural Networking",
+            description: "Global network connecting agri-entrepreneurs and sustainability advocates.",
+            contact: "info@agriprofocus.com",
+            website: "www.agriprofocus.com"
+            },
+            {
+            name: "African Agribusiness Incubators Network (AAIN)",
+            lat: 9.0579,
+            lng: 7.4951,
+            category: "agriculture",
+            type: "Agribusiness",
+            description: "Supports agribusiness incubation and youth entrepreneurship across Africa.",
+            contact: "info@aain.org",
+            website: "www.aain.org"
+            },
+            {
+            name: "Food and Agriculture Organization (FAO) Africa",
+            lat: 6.5244,
+            lng: 3.3792,
+            category: "agriculture",
+            type: "Agricultural Policy",
+            description: "UN agency supporting sustainable agriculture and food systems.",
+            contact: "info@fao.org",
+            website: "www.fao.org"
+            },
+            {
+            name: "EcoAgriculture Partners",
+            lat: 38.9072,
+            lng: -77.0369,
+            category: "agriculture",
+            type: "Landscape Management",
+            description: "Promotes integrated landscape approaches for agriculture and conservation.",
+            contact: "info@ecoagriculture.org",
+            website: "www.ecoagriculture.org"
+            },
+            {
+            name: "African Women in Agricultural Research and Development (AWARD)",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "agriculture",
+            type: "Gender & Agriculture",
+            description: "Empowers women scientists and farmers in sustainable agriculture.",
+            contact: "info@awardfellowships.org",
+            website: "www.awardfellowships.org"
+            },
+            {
+            name: "Regeneration International",
+            lat: 39.7392,
+            lng: -104.9903,
+            category: "agriculture",
+            type: "Regenerative Agriculture",
+            description: "Global network promoting soil health and regenerative farming practices.",
+            contact: "info@regenerationinternational.org",
+            website: "www.regenerationinternational.org"
+            }
+        ];
+
+        const conservationInitiatives = [
+            // Add conservation initiatives here
+            {
+            name: "African Parks Network",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "conservation",
+            type: "Protected Area Management",
+            description: "Manages national parks and reserves across Africa to restore biodiversity and ecosystems.",
+            contact: "info@africanparks.org",
+            website: "www.africanparks.org"
+            },
+            {
+            name: "Wildlife Conservation Society (WCS) Africa",
+            lat: 0.3476,
+            lng: 32.5825,
+            category: "conservation",
+            type: "Wildlife Protection",
+            description: "Protects endangered species and habitats through science and community engagement.",
+            contact: "info@wcs.org",
+            website: "www.wcs.org"
+            },
+            {
+            name: "Nature Conservancy Africa",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "conservation",
+            type: "Landscape Conservation",
+            description: "Works with local partners to conserve lands and waters across Africa.",
+            contact: "info@tnc.org",
+            website: "www.nature.org"
+            },
+            {
+            name: "Jane Goodall Institute Africa",
+            lat: -6.7924,
+            lng: 39.2083,
+            category: "conservation",
+            type: "Primate Conservation",
+            description: "Protects chimpanzees and their habitats while empowering local communities.",
+            contact: "info@janegoodall.org",
+            website: "www.janegoodall.org"
+            },
+            {
+            name: "African Wildlife Foundation (AWF)",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "conservation",
+            type: "Wildlife & Habitat Conservation",
+            description: "Conserves Africa’s wildlife and wild lands through science, policy, and education.",
+            contact: "info@awf.org",
+            website: "www.awf.org"
+            },
+            {
+            name: "Green Belt Movement",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "conservation",
+            type: "Forest Restoration",
+            description: "Founded by Wangari Maathai to promote tree planting and environmental stewardship.",
+            contact: "info@greenbeltmovement.org",
+            website: "www.greenbeltmovement.org"
+            },
+            {
+            name: "BirdLife International Africa",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "conservation",
+            type: "Avian Conservation",
+            description: "Protects birds and their habitats through research and community-based conservation.",
+            contact: "info@birdlife.org",
+            website: "www.birdlife.org"
+            },
+            {
+            name: "WWF Africa",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "conservation",
+            type: "Biodiversity Conservation",
+            description: "Works to protect nature and reduce the most pressing threats to biodiversity.",
+            contact: "info@wwf.org",
+            website: "www.wwf.org"
+            },
+            {
+            name: "Pan African Sanctuary Alliance (PASA)",
+            lat: 0.3136,
+            lng: 32.5811,
+            category: "conservation",
+            type: "Primate Rescue",
+            description: "Supports sanctuaries that rescue and rehabilitate endangered primates across Africa.",
+            contact: "info@pasa.org",
+            website: "www.pasa.org"
+            },
+            {
+            name: "Conservation International Africa",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "conservation",
+            type: "Climate & Ecosystem Protection",
+            description: "Protects nature for the benefit of humanity through science and partnerships.",
+            contact: "info@conservation.org",
+            website: "www.conservation.org"
+            },
+            {
+            name: "Endangered Wildlife Trust",
+            lat: -26.2041,
+            lng: 28.0473,
+            category: "conservation",
+            type: "Species Recovery",
+            description: "Works to conserve threatened species and ecosystems in southern Africa.",
+            contact: "info@ewt.org.za",
+            website: "www.ewt.org.za"
+            },
+            {
+            name: "Marine Conservation Society Seychelles",
+            lat: -4.6167,
+            lng: 55.4500,
+            category: "conservation",
+            type: "Marine Protection",
+            description: "Protects coral reefs, turtles, and marine biodiversity in the Indian Ocean.",
+            contact: "info@mcss.sc",
+            website: "www.mcss.sc"
+            },
+            {
+            name: "Ecoexist Project Botswana",
+            lat: -19.9833,
+            lng: 23.4167,
+            category: "conservation",
+            type: "Human-Wildlife Coexistence",
+            description: "Promotes peaceful coexistence between people and elephants in Botswana.",
+            contact: "info@ecoexistproject.org",
+            website: "www.ecoexistproject.org"
+            },
+            {
+            name: "African Elephant Coalition",
+            lat: 6.5244,
+            lng: 3.3792,
+            category: "conservation",
+            type: "Elephant Protection",
+            description: "Coalition of African countries working to protect elephants and ban ivory trade.",
+            contact: "info@africanelephantcoalition.org",
+            website: "www.africanelephantcoalition.org"
+            },
+            {
+            name: "Great Green Wall Initiative",
+            lat: 15.0000,
+            lng: 0.0000,
+            category: "conservation",
+            type: "Land Restoration",
+            description: "Pan-African effort to restore degraded land and combat desertification in the Sahel.",
+            contact: "info@ggwi.org",
+            website: "www.greatgreenwall.org"
+            },
+            {
+            name: "Wildlife ACT South Africa",
+            lat: -28.0000,
+            lng: 32.0000,
+            category: "conservation",
+            type: "Endangered Species Monitoring",
+            description: "Monitors endangered species and supports conservation research in protected areas.",
+            contact: "info@wildlifeact.com",
+            website: "www.wildlifeact.com"
+            },
+            {
+            name: "Sea Shepherd Africa",
+            lat: -33.9249,
+            lng: 18.4241,
+            category: "conservation",
+            type: "Marine Conservation",
+            description: "Protects marine wildlife and combats illegal fishing in African waters.",
+            contact: "info@seashepherd.org",
+            website: "www.seashepherd.org"
+            },
+            {
+            name: "African Conservation Foundation",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "conservation",
+            type: "Community Conservation",
+            description: "Supports grassroots conservation projects and wildlife protection across Africa.",
+            contact: "info@africanconservation.org",
+            website: "www.africanconservation.org"
+            },
+            {
+            name: "WildlifeDirect Kenya",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "conservation",
+            type: "Wildlife Advocacy",
+            description: "Promotes wildlife conservation through education, media, and policy engagement.",
+            contact: "info@wildlifedirect.org",
+            website: "www.wildlifedirect.org"
+            },
+            {
+            name: "African Biodiversity Network",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "conservation",
+            type: "Indigenous Knowledge & Biodiversity",
+            description: "Supports indigenous communities in conserving biodiversity and cultural heritage.",
+            contact: "info@africanbiodiversity.org",
+            website: "www.africanbiodiversity.org"
+            }
+
+        ];  
+        
+        const traininginitiatives = [
+            // Add training initiatives here
+            {
+            name: "INCO Academy – Green Pathways",
+            lat: 48.8566,
+            lng: 2.3522,
+            category: "training",
+            type: "Sustainability Skills",
+            description: "Free online training program for climate careers and green economy skills.",
+            contact: "info@inco-group.co",
+            website: "https://greenpathways.inco-group.co"
+            },
+            {
+            name: "Solar Energy International (SEI)",
+            lat: 38.9972,
+            lng: -106.9878,
+            category: "training",
+            type: "Renewable Energy",
+            description: "Offers online and in-person training in solar PV and clean energy systems.",
+            contact: "info@solarenergy.org",
+            website: "https://www.solarenergy.org"
+            },
+            {
+            name: "SABAA.education",
+            lat: 5.5600,
+            lng: -0.2100,
+            category: "training",
+            type: "Circular Economy",
+            description: "Provides foundational sustainability education for Sub-Saharan Africa.",
+            contact: "info@sabaa.education",
+            website: "https://www.sabaa.education"
+            },
+            {
+            name: "UN SDG: Learn",
+            lat: 46.2044,
+            lng: 6.1432,
+            category: "training",
+            type: "Sustainable Development",
+            description: "Free courses aligned with the UN Sustainable Development Goals.",
+            contact: "info@unsdglearn.org",
+            website: "https://www.unsdglearn.org"
+            },
+            {
+            name: "Youth Climate Lab",
+            lat: 45.4215,
+            lng: -75.6990,
+            category: "training",
+            type: "Climate Innovation",
+            description: "Empowers youth through labs, fellowships, and green skills programs.",
+            contact: "info@youthclimatelab.org",
+            website: "https://www.youthclimatelab.org"
+            },
+            {
+            name: "Green Jobs Network",
+            lat: 37.7749,
+            lng: -122.4194,
+            category: "training",
+            type: "Green Careers",
+            description: "Curates green job training programs and climate career resources.",
+            contact: "info@greenjobs.net",
+            website: "https://www.climatejobtraining.com"
+            },
+            {
+            name: "Permaculture Research Institute Kenya",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "training",
+            type: "Permaculture",
+            description: "Offers permaculture design courses and community-based farming solutions.",
+            contact: "info@pri-kenya.org",
+            website: "https://www.pri-kenya.org"
+            },
+            {
+            name: "Ghana Permaculture Institute",
+            lat: 7.3333,
+            lng: -1.0000,
+            category: "training",
+            type: "Regenerative Agriculture",
+            description: "Trains youth and farmers in sustainable land use and agroecology.",
+            contact: "info@ghanapermaculture.org",
+            website: "https://www.ghanapermaculture.org"
+            },
+            {
+            name: "Sustainable Agriculture Tanzania (SAT)",
+            lat: -7.0000,
+            lng: 35.0000,
+            category: "training",
+            type: "Agroecology",
+            description: "Promotes ecological farming and farmer training in Tanzania.",
+            contact: "info@kilimo.org",
+            website: "https://www.kilimo.org"
+            },
+            {
+            name: "African Women in Agricultural Research and Development (AWARD)",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "training",
+            type: "Gender & Agriculture",
+            description: "Empowers women scientists and farmers through leadership and research training.",
+            contact: "info@awardfellowships.org",
+            website: "https://www.awardfellowships.org"
+            },
+            {
+            name: "EcoAgriculture Partners",
+            lat: 38.9072,
+            lng: -77.0369,
+            category: "training",
+            type: "Landscape Management",
+            description: "Provides training on integrated landscape approaches for agriculture and conservation.",
+            contact: "info@ecoagriculture.org",
+            website: "https://www.ecoagriculture.org"
+            },
+            {
+            name: "African Agribusiness Incubators Network (AAIN)",
+            lat: 9.0579,
+            lng: 7.4951,
+            category: "training",
+            type: "Agribusiness",
+            description: "Supports agribusiness incubation and youth entrepreneurship across Africa.",
+            contact: "info@aain.org",
+            website: "https://www.aain.org"
+            },
+            {
+            name: "Green Africa Foundation",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "training",
+            type: "Agroforestry",
+            description: "Promotes tree planting and sustainable land management through community training.",
+            contact: "info@greenafricafoundation.org",
+            website: "https://www.greenafricafoundation.org"
+            },
+            {
+            name: "Farm Radio International",
+            lat: 5.5500,
+            lng: -0.2000,
+            category: "training",
+            type: "Agricultural Communication",
+            description: "Uses radio to share climate-smart farming knowledge with rural communities.",
+            contact: "info@farmradio.org",
+            website: "https://www.farmradio.org"
+            },
+            {
+            name: "Coursera – Climate & Sustainability Courses",
+            lat: 37.3861,
+            lng: -122.0839,
+            category: "training",
+            type: "Online Learning",
+            description: "Offers certificates and degrees in climate science, agriculture, and sustainability.",
+            contact: "support@coursera.org",
+            website: "https://www.coursera.org"
+            },
+            {
+            name: "edX – Environmental & Sustainability Programs",
+            lat: 42.3736,
+            lng: -71.1097,
+            category: "training",
+            type: "Online Learning",
+            description: "Professional certificates and microdegrees from top universities in sustainability topics.",
+            contact: "info@edx.org",
+            website: "https://www.edx.org"
+            },
+            {
+            name: "FutureLearn – Climate and Nature Courses",
+            lat: 51.5074,
+            lng: -0.1278,
+            category: "training",
+            type: "Online Learning",
+            description: "UK-based platform offering global courses in climate justice and biodiversity.",
+            contact: "support@futurelearn.com",
+            website: "https://www.futurelearn.com"
+            },
+            {
+            name: "OpenLearn – Free Sustainability Courses",
+            lat: 52.2053,
+            lng: 0.1218,
+            category: "training",
+            type: "Open Education",
+            description: "Free courses on sustainable agriculture, waste management, and climate action.",
+            contact: "info@open.edu",
+            website: "https://www.open.edu/openlearn"
+            },
+            {
+            name: "TrainingCred – Agribusiness & Sustainability",
+            lat: 6.5244,
+            lng: 3.3792,
+            category: "training",
+            type: "Professional Development",
+            description: "Offers short courses and certifications in agribusiness and sustainability.",
+            contact: "info@trainingcred.com",
+            website: "https://trainingcred.com"
+            },
+            {
+            name: "Class Central – Sustainability Course Directory",
+            lat: 37.7749,
+            lng: -122.4194,
+            category: "training",
+            type: "Course Aggregator",
+            description: "Lists hundreds of free sustainability and climate-related courses from global providers.",
+            contact: "info@classcentral.com",
+            website: "https://www.classcentral.com"
+            }
+
+        ];
+
+        const wasteinitiatives = [
+            // Add waste initiatives here
+            {
+            name: "Zoomlion Ghana Limited",
+            lat: 5.5600,
+            lng: -0.2100,
+            category: "waste",
+            type: "Integrated Waste Services",
+            description: "Provides waste collection, recycling, and sanitation services across Ghana.",
+            contact: "info@zoomlionghana.com",
+            website: "www.zoomlionghana.com"
+            },
+            {
+            name: "Recycle Up! Ghana",
+            lat: 6.6900,
+            lng: -1.6300,
+            category: "waste",
+            type: "Youth Recycling Education",
+            description: "Empowers youth to lead recycling and waste education campaigns.",
+            contact: "info@recycleupghana.org",
+            website: "www.recycleupghana.org"
+            },
+            {
+            name: "Plastic Punch Ghana",
+            lat: 5.5600,
+            lng: -0.2100,
+            category: "waste",
+            type: "Marine Plastic Cleanup",
+            description: "Removes plastic waste from beaches and educates communities on marine conservation.",
+            contact: "info@plasticpunch.org",
+            website: "www.plasticpunch.org"
+            },
+            {
+            name: "Wecyclers Nigeria",
+            lat: 6.5244,
+            lng: 3.3792,
+            category: "waste",
+            type: "Community Recycling",
+            description: "Uses low-cost cargo bikes to collect recyclables from households in Lagos.",
+            contact: "info@wecyclers.com",
+            website: "www.wecyclers.com"
+            },
+            {
+            name: "Mr. Green Africa",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "waste",
+            type: "Plastic Recycling",
+            description: "Kenyan social enterprise turning plastic waste into high-quality recycled materials.",
+            contact: "info@mrgreenafrica.com",
+            website: "www.mrgreenafrica.com"
+            },
+            {
+            name: "Baus Recycling Uganda",
+            lat: 0.3476,
+            lng: 32.5825,
+            category: "waste",
+            type: "Electronic Waste",
+            description: "Collects and recycles e-waste while training youth in safe disposal practices.",
+            contact: "info@bausrecycling.com",
+            website: "www.bausrecycling.com"
+            },
+            {
+            name: "EcoPost Kenya",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "waste",
+            type: "Plastic Waste to Products",
+            description: "Transforms plastic waste into durable building materials like fencing posts.",
+            contact: "info@ecopost.co.ke",
+            website: "www.ecopost.co.ke"
+            },
+            {
+            name: "Green Africa Youth Organization (GAYO)",
+            lat: 5.5600,
+            lng: -0.2100,
+            category: "waste",
+            type: "Zero Waste Advocacy",
+            description: "Promotes zero waste practices and circular economy education in Ghana.",
+            contact: "info@gayoghana.org",
+            website: "www.gayoghana.org"
+            },
+            {
+            name: "RecyclePoints Nigeria",
+            lat: 6.5244,
+            lng: 3.3792,
+            category: "waste",
+            type: "Incentivized Recycling",
+            description: "Rewards households for recycling with points redeemable for goods and services.",
+            contact: "info@recyclepoints.com",
+            website: "www.recyclepoints.com"
+            },
+            {
+            name: "Trashy Bags Africa",
+            lat: 5.5600,
+            lng: -0.2100,
+            category: "waste",
+            type: "Upcycling",
+            description: "Upcycles plastic sachets into reusable bags and accessories in Ghana.",
+            contact: "info@trashybagsafrica.com",
+            website: "www.trashybagsafrica.com"
+            },
+            {
+            name: "SWEEP Foundation Nigeria",
+            lat: 6.5244,
+            lng: 3.3792,
+            category: "waste",
+            type: "Environmental Education",
+            description: "Educates youth and communities on proper waste disposal and recycling.",
+            contact: "info@sweepfoundation.org",
+            website: "www.sweepfoundation.org"
+            },
+            {
+            name: "Green Loop Ghana",
+            lat: 5.5600,
+            lng: -0.2100,
+            category: "waste",
+            type: "Circular Economy",
+            description: "Connects waste generators with recyclers to close the loop on plastic waste.",
+            contact: "info@greenloopgh.com",
+            website: "www.greenloopgh.com"
+            },
+            {
+            name: "TakaTaka Solutions Kenya",
+            lat: -1.2833,
+            lng: 36.8167,
+            category: "waste",
+            type: "Waste Sorting & Composting",
+            description: "Provides waste collection, sorting, and composting services in Nairobi.",
+            contact: "info@takatakasolutions.com",
+            website: "www.takatakasolutions.com"
+            },
+            {
+            name: "RecycleX Ghana",
+            lat: 5.5600,
+            lng: -0.2100,
+            category: "waste",
+            type: "Plastic Recovery",
+            description: "Collects and processes post-consumer plastic waste into reusable materials.",
+            contact: "info@recyclexgh.com",
+            website: "www.recyclexgh.com"
+            },
+            {
+            name: "EcoCentric Kenya",
+            lat: -1.2921,
+            lng: 36.8219,
+            category: "waste",
+            type: "E-Waste Recycling",
+            description: "Handles electronic waste recycling and safe disposal in East Africa.",
+            contact: "info@ecocentric.co.ke",
+            website: "www.ecocentric.co.ke"
+            },
+            {
+            name: "Wastezon Rwanda",
+            lat: -1.9500,
+            lng: 30.0588,
+            category: "waste",
+            type: "Smart Waste Management",
+            description: "Uses tech to connect waste producers with recyclers and reduce landfill use.",
+            contact: "info@wastezon.com",
+            website: "www.wastezon.com"
+            },
+            {
+            name: "Clean Up Nigeria",
+            lat: 6.5244,
+            lng: 3.3792,
+            category: "waste",
+            type: "Public Sanitation",
+            description: "Mobilizes communities for clean-up campaigns and sanitation awareness.",
+            contact: "info@cleanupnigeria.org",
+            website: "www.cleanupnigeria.org"
+            },
+            {
+            name: "RecycleUp! Academy Ghana",
+            lat: 6.6900,
+            lng: -1.6300,
+            category: "waste",
+            type: "Youth Training",
+            description: "Trains young leaders in waste entrepreneurship and circular economy solutions.",
+            contact: "academy@recycleupghana.org",
+            website: "www.recycleupghana.org"
+            },
+            {
+            name: "GreenHub Nigeria",
+            lat: 6.5244,
+            lng: 3.3792,
+            category: "waste",
+            type: "Waste Innovation",
+            description: "Incubates startups focused on waste-to-resource innovations and clean tech.",
+            contact: "info@greenhub.ng",
+            website: "www.greenhub.ng"
+            },
+            {
+            name: "EcoHubMap – Waste NGO Directory",
+            lat: 51.5074,
+            lng: -0.1278,
+            category: "waste",
+            type: "Global Directory",
+            description: "Maps NGOs working on waste management, recycling, and circular economy worldwide.",
+            contact: "info@ecohubmap.com",
+            website: "www.ecohubmap.com"
+            }
+
+            
+        ];
+
+
+        // Initialize map
+        function initializeMap() {
+            map = L.map('map').setView([7.9465, -1.0232], 6); // Center on Ghana
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // Add markers for all initiatives
+            initiatives.forEach(initiative => {
+                const marker = L.marker([initiative.lat, initiative.lng])
+                    .addTo(map)
+                    .bindPopup(createPopupContent(initiative));
+                
+                marker.initiativeData = initiative;
+                markers.push(marker);
+            });
+        }
+
+        // Create popup content
+        function createPopupContent(initiative) {
+            const categoryColors = {
+                renewable: 'yellow',
+                training: 'blue',
+                conservation: 'green',
+                agriculture: 'orange',
+                waste: 'purple'
+            };
+            
+            const color = categoryColors[initiative.category] || 'gray';
+            
+            return `
+                <div class="p-2 max-w-xs">
+                    <div class="flex items-center mb-2">
+                        <div class="w-3 h-3 bg-${color}-500 rounded-full mr-2"></div>
+                        <span class="text-xs font-medium text-${color}-600 uppercase">${initiative.category}</span>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">${initiative.name}</h3>
+                    <p class="text-sm text-gray-600 mb-3">${initiative.description}</p>
+                    <div class="space-y-1 text-xs">
+                        <div><strong>Type:</strong> ${initiative.type}</div>
+                        <div><strong>Contact:</strong> ${initiative.contact}</div>
+                        <div><strong>Website:</strong> <a href="http://${initiative.website}" target="_blank" class="text-blue-600 hover:underline">${initiative.website}</a></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Filter map by category
+        function filterMap(category) {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            // Filter markers
+            markers.forEach(marker => {
+                if (category === 'all' || marker.initiativeData.category === category) {
+                    marker.addTo(map);
+                } else {
+                    map.removeLayer(marker);
+                }
+            });
+            
+            // Fit map to filtered markers
+            const visibleMarkers = markers.filter(marker => 
+                category === 'all' || marker.initiativeData.category === category
+            );
+            
+            if (visibleMarkers.length > 0) {
+                const group = new L.featureGroup(visibleMarkers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+
+        // Search functionality
+        function initializeSearch() {
+            const searchInput = document.getElementById('search-input');
+            
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                
+                markers.forEach(marker => {
+                    const data = marker.initiativeData;
+                    const matchesSearch = !searchTerm || 
+                        data.name.toLowerCase().includes(searchTerm) ||
+                        data.description.toLowerCase().includes(searchTerm) ||
+                        data.type.toLowerCase().includes(searchTerm);
+                    
+                    if (matchesSearch) {
+                        marker.addTo(map);
+                    } else {
+                        map.removeLayer(marker);
+                    }
+                });
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hamburger Menu Toggle
+            const hamburgerBtn = document.getElementById('hamburger-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const hamburgerIcon = hamburgerBtn.querySelector('i');
+
+            hamburgerBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                hamburgerIcon.classList.toggle('fa-bars');
+                hamburgerIcon.classList.toggle('fa-times');
+            });
+
+
+            // Initialize map
+            setTimeout(() => {
+                initializeMap();
+                initializeSearch();
+            }, 500);
+            
+            // Add filter button event listeners
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    filterMap(category);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Green Skills Ghana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --forest-green: #2D5016;
+      --earth-brown: #8B4513;
+      --sunset-orange: #FF6B35;
+      --savannah-gold: #DAA520;
+      --cream-white: #FFF8DC;
+      --charcoal: #2F2F2F;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--cream-white);
+      color: var(--charcoal);
+    }
+    .font-display { font-family: 'Playfair Display', serif; }
+    .glass-nav { backdrop-filter: blur(10px); background: rgba(255, 248, 220, 0.9); border-bottom: 1px solid rgba(45, 80, 22, 0.1); }
+    .nav-link { position: relative; transition: color 0.3s ease; }
+    .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background: var(--sunset-orange); transition: width 0.3s ease; }
+    .nav-link:hover::after { width: 100%; }
+    .btn-primary { background: var(--forest-green); color: white; transition: all 0.3s ease; }
+    .btn-primary:hover { background: var(--earth-brown); }
+    .resource-card { background: white; border: 1px solid rgba(45, 80, 22, 0.1); transition: all 0.3s ease; }
+    .resource-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(45, 80, 22, 0.15); }
+    .map-container { height: 500px; border-radius: 1rem; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+    .map-container iframe { width: 100%; height: 100%; }
+    .footer-bg { background: var(--charcoal); }
+    .text-cream-white { color: var(--cream-white); }
+    .text-earth-brown { color: var(--earth-brown); }
+    .text-forest-green { color: var(--forest-green); }
+    .text-savannah-gold { color: var(--savannah-gold); }
+    .text-charcoal { color: var(--charcoal); }
+    .text-sunset-orange { color: var(--sunset-orange); }
+    .bg-forest-green { background: var(--forest-green); }
+    .bg-earth-brown { background: var(--earth-brown); }
+    .earth-brown-hover:hover { color: var(--earth-brown) !important; }
+    .bg-savannah-gold { background: var(--savannah-gold); }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="glass-nav fixed w-full top-0 z-50 py-4">
+    <div class="container mx-auto px-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center">
+            <span class="text-white font-bold text-lg">🌱</span>
+          </div>
+          <span class="font-display text-2xl font-bold text-[--forest-green]">Green Ghana</span>
+        </div>
+         <div class="md:flex flex-1 justify-center items-center space-x-8">
+          <a href="index.html" class="nav-link font-medium">Home</a>
+          <a href="About.html" class="nav-link font-medium dark-nav-text">About</a>
+          <a href="assessment.html" class="nav-link font-medium">Assessment</a>
+          <a href="calculator.html" class="nav-link font-medium">Calculator</a>
+          <a href="resources.html" class="nav-link font-medium text-orange-500">Resources</a>
+          <button onclick="window.location.href='index.html'" class="btn-primary px-6 py-2 rounded-full font-medium">Back to Home</button>
+        </div>
+        <div class="md:hidden">
+          <button id="hamburger-btn" class="text-2xl text-[--forest-green]"> 
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </div>
+      <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+        <a href="index.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Home</a>
+        <a href="About.html" class="nav-link font-medium dark-nav-text">About</a>
+        <a href="assessment.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Assessment</a>
+        <a href="calculator.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Calculator</a>
+        <a href="resources.html" class="block py-2 px-4 text-sm bg-green-100 text-green-800 rounded">Resources</a>
+      </div>
+    </div>
+  </nav>
+
+        <!-- Main Content -->
+<main class="pt-24 pb-12">
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-12">
+      <h1 class="font-display text-5xl font-bold mb-6 text-[--forest-green]">About Green Skills Ghana</h1>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        Empowering communities across Ghana and Africa with the knowledge, tools, and opportunities to thrive in a sustainable future.
+      </p>
+    </div>
+
+    <!-- Video Section -->
+    <section class="mb-16">
+      <div class="resource-card rounded-2xl p-8">
+        <div class="mb-8">
+          <h2 class="font-display text-3xl font-bold mb-4 text-[--forest-green]">Why Green Skills Matter</h2>
+          <p class="text-gray-600 text-lg">
+            Green skills are the knowledge, abilities, values, and attitudes needed to live, work, and thrive in ways that protect and restore the environment. From renewable energy and sustainable agriculture to waste management and conservation, these skills are essential for building resilient communities and a climate-smart economy.
+          </p>
+        </div>
+
+        <!-- Video Embed -->
+        <div class="map-container mb-8">
+          <iframe width="853" height="480" src="https://www.youtube.com/embed/9GA1MOebv58" title="What are Green Skills?" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- Green Skills Sections -->
+    <section class="space-y-16">
+      <!-- Renewable Energy -->
+      <div class="resource-card rounded-2xl p-8">
+        <h2 class="font-display text-3xl font-bold mb-4 text-[--forest-green]">🌞 Renewable Energy</h2>
+        <p class="text-gray-600 mb-4">Renewable energy refers to power generated from natural sources that replenish themselves — like sunlight, wind, water, and biomass.</p>
+        <p class="text-gray-600 mb-4">It reduces dependence on fossil fuels, expands access to electricity, creates green jobs, and supports climate resilience.</p>
+        <ul class="list-disc list-inside text-gray-700 mb-4">
+          <li>Solar and wind are abundant across Africa</li>
+          <li>Green jobs in installation and maintenance</li>
+          <li>Supports off-grid rural electrification</li>
+        </ul>
+        <p class="text-sm italic text-gray-500">“Africa is experiencing a critical shortage of green skills competencies required to support the continent’s transition to a low-carbon, climate-resilient economy.” — AfriCGE</p>
+      </div>
+
+      <!-- Sustainable Agriculture -->
+      <div class="resource-card rounded-2xl p-8">
+        <h2 class="font-display text-3xl font-bold mb-4 text-[--forest-green]">🌱 Sustainable Agriculture</h2>
+        <p class="text-gray-600 mb-4">Sustainable agriculture uses ecological principles to grow food in ways that preserve soil health, biodiversity, and water resources.</p>
+        <p class="text-gray-600 mb-4">It ensures food security, empowers smallholder farmers, and supports Indigenous knowledge systems.</p>
+        <ul class="list-disc list-inside text-gray-700 mb-4">
+          <li>Agroecology and permaculture restore degraded land</li>
+          <li>Climate-smart farming adapts to erratic weather</li>
+          <li>Training boosts resilience and productivity</li>
+        </ul>
+        <p class="text-sm italic text-gray-500">“The Great Green Wall exemplifies how African nations can leverage diverse expertise and resources for large-scale environmental projects.” — IIARD Journal</p>
+      </div>
+
+      <!-- Waste Management -->
+      <div class="resource-card rounded-2xl p-8">
+        <h2 class="font-display text-3xl font-bold mb-4 text-[--forest-green]">♻️ Waste Management</h2>
+        <p class="text-gray-600 mb-4">Waste management involves collecting, sorting, recycling, and safely disposing of waste materials.</p>
+        <p class="text-gray-600 mb-4">It reduces pollution, creates jobs, conserves resources, and supports clean cities.</p>
+        <ul class="list-disc list-inside text-gray-700 mb-4">
+          <li>Plastic recovery and composting reduce landfill use</li>
+          <li>Entrepreneurship in recycling drives innovation</li>
+          <li>Community education fosters zero-waste culture</li>
+        </ul>
+        <p class="text-sm italic text-gray-500">“Circular economy models and zero-waste education are key to transforming Africa’s waste crisis into opportunity.” — AfriCGE</p>
+      </div>
+
+      <!-- Conservation -->
+      <div class="resource-card rounded-2xl p-8">
+        <h2 class="font-display text-3xl font-bold mb-4 text-[--forest-green]">🌿 Conservation</h2>
+        <p class="text-gray-600 mb-4">Conservation protects natural ecosystems, wildlife, and biodiversity through restoration, protection, and stewardship.</p>
+        <p class="text-gray-600 mb-4">It preserves Africa’s rich biodiversity, supports ecotourism, and mitigates climate change.</p>
+        <ul class="list-disc list-inside text-gray-700 mb-4">
+          <li>Forest and marine conservation protect carbon sinks</li>
+          <li>Species monitoring prevents extinction</li>
+          <li>Indigenous stewardship preserves cultural heritage</li>
+        </ul>
+        <p class="text-sm italic text-gray-500">“Collaboration among stakeholders is key to balancing environmental sustainability with economic development.” — IIARD Journal</p>
+      </div>
+
+      <!-- Training & Education -->
+      <div class="resource-card rounded-2xl p-8">
+        <h2 class="font-display text-3xl font-bold mb-4 text-[--forest-green]">📘 Training & Education</h2>
+        <p class="text-gray-600 mb-4">Green training equips individuals with the knowledge and skills to work in sustainability-focused sectors.</p>
+        <p class="text-gray-600 mb-4">It builds a workforce ready for the green economy, empowers youth and women, and drives innovation.</p>
+        <ul class="list-disc list-inside text-gray-700 mb-4">
+          <li>Vocational programs and online courses bridge skill gaps</li>
+          <li>Community workshops foster local solutions</li>
+          <li>Green skills are now a priority in African education policy</li>
+        </ul>
+        <p class="text-sm italic text-gray-500">“Green skills have become a priority in research, policy action, and social communication.” — ACQF</p>
+      </div>
+    </section>
+  </div>
+</main>
+ <!-- Footer -->
+    <footer class="py-12 footer-bg">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🌱</span>
+                    </div>
+                    <span class="font-display text-2xl font-bold text-white">Green Ghana</span>
+                </div>
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Empowering Ghana's communities with green skills, sustainable practices, and climate resilience for a prosperous future.
+                </p>
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2025 Green Ghana. Building sustainable futures together.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

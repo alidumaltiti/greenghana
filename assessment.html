@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Skills Assessment - Green Skills Ghana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --forest-green: #2D5016;
+            --earth-brown: #8B4513;
+            --sunset-orange: #FF6B35;
+            --savannah-gold: #DAA520;
+            --ocean-blue: #1E90FF;
+            --clay-red: #CD853F;
+            --cream-white: #FFF8DC;
+            --charcoal: #2F2F2F;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--cream-white) 0%, var(--savannah-gold) 100%);
+            color: var(--charcoal);
+            overflow-x: hidden;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-script { font-family: 'Dancing Script', cursive; }
+        
+        .glass-nav {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 248, 220, 0.9);
+            border-bottom: 1px solid rgba(45, 80, 22, 0.1);
+        }
+        
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(45, 80, 22, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .option-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(45, 80, 22, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .option-card:hover {
+            border-color: var(--forest-green);
+            background: rgba(45, 80, 22, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .option-card.selected {
+            border-color: var(--sunset-orange);
+            background: rgba(255, 107, 53, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--forest-green), var(--sunset-orange));
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .btn-primary {
+            background: var(--forest-green);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--earth-brown);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(45, 80, 22, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .skill-badge {
+            background: linear-gradient(135deg, var(--sunset-orange), var(--clay-red));
+            color: white;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(45, 80, 22, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--sunset-orange);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+        }
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(255, 248, 220, 0.95);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            min-width: 200px;
+            z-index: 10;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border: 1px solid rgba(45, 80, 22, 0.1);
+        }
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .dropdown-menu a {
+            padding: 0.75rem 1.5rem;
+            color: var(--charcoal);
+        }
+
+        .quiz-step {
+            display: none;
+        }
+        
+        .quiz-step.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full top-0 z-50 py-4">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🌱</span>
+                    </div>
+                    <span class="font-display text-2xl font-bold" style="color: var(--forest-green);">Green Skills Ghana</span>
+                </div>
+                <div class="md:flex flex-1 justify-center items-center space-x-8">
+                    <a href="index.html" class="nav-link font-medium">Home</a>
+                    <a href="About.html" class="nav-link font-medium dark-nav-text">About</a>
+                    <a href="assessment.html" class="nav-link font-medium text-orange-500">Assessment</a>
+                    <a href="calculator.html" class="nav-link font-medium">Calculator</a>
+                    <div class="dropdown">
+                        <a href="resources.html" class="nav-link font-medium flex items-center">
+                            Resources <i class="fas fa-chevron-down text-xs ml-2"></i>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="resources.html#courses" class="block hover:bg-green-100">Online Courses</a>
+                            <a href="resources.html#map" class="block hover:bg-green-100">Initiatives Map</a>
+                            <a href="resources.html#jobs" class="block hover:bg-green-100">Green Jobs</a>
+                        </div>
+                    </div>
+                    <button onclick="window.location.href='index.html'" class="btn-primary px-6 py-2 rounded-full font-medium">Back to Home</button>
+                </div>
+                <!-- Hamburger Menu -->
+                <div class="md:hidden">
+                    <button id="hamburger-btn" class="text-2xl" style="color: var(--forest-green);">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+                <a href="index.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Home</a>
+                <a href="About.html" class="nav-link font-medium dark-nav-text">About</a>
+                <a href="assessment.html" class="block py-2 px-4 text-sm bg-green-100 text-green-800 rounded">Assessment</a>
+                <a href="calculator.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Calculator</a>
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="w-full text-left flex items-center justify-between py-2 px-4 text-sm hover:bg-green-100 rounded">
+                        Resources <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="mt-2 pl-4 space-y-2" style="display: none;">
+                        <a href="resources.html#courses" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Online Courses</a>
+                        <a href="resources.html#map" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Initiatives Map</a>
+                        <a href="resources.html#jobs" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Green Jobs</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12">
+        <div class="container mx-auto px-6">
+            <!-- Header Section -->
+            <div class="text-center mb-12">
+                <h1 class="font-display text-5xl font-bold mb-6" style="color: var(--forest-green);">
+                    Green Skills Assessment
+                </h1>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                    Discover your current green skills level across five key areas and get personalized learning recommendations for Ghana's sustainable economy.
+                </p>
+                
+                <!-- Progress Bar -->
+                <div class="max-w-2xl mx-auto mb-8">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>Progress</span>
+                        <span id="progress-text">0% Complete</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="progress-bar" class="progress-bar w-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Container -->
+            <div class="max-w-4xl mx-auto">
+                <!-- Start Screen -->
+                <div id="start-screen" class="quiz-step active">
+                    <div class="quiz-card rounded-2xl p-8 text-center">
+                        <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-green-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span class="text-4xl text-white">🌱</span>
+                        </div>
+                        <h2 class="font-display text-3xl font-bold mb-6" style="color: var(--forest-green);">
+                            Ready to Discover Your Green Skills?
+                        </h2>
+                        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                            This assessment will evaluate your knowledge across five key areas of Ghana's green economy. 
+                            It takes about 10 minutes and will provide personalized recommendations for your learning journey.
+                        </p>
+                        <div class="grid md:grid-cols-3 gap-6 mb-8">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-orange-500">20</div>
+                                <div class="text-sm text-gray-600">Questions</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-orange-500">5</div>
+                                <div class="text-sm text-gray-600">Skill Areas</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-orange-500">10</div>
+                                <div class="text-sm text-gray-600">Minutes</div>
+                            </div>
+                        </div>
+                        <button onclick="startQuiz()" class="btn-primary px-12 py-4 rounded-full text-lg font-semibold">
+                            Start Assessment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Questions -->
+                <div id="quiz-container" class="quiz-step">
+                    <div class="quiz-card rounded-2xl p-8">
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <span id="question-category" class="px-4 py-2 bg-orange-100 text-orange-800 rounded-full text-sm font-medium"></span>
+                                <span id="question-number" class="text-gray-500"></span>
+                            </div>
+                            <h2 id="question-text" class="font-display text-2xl font-bold mb-6" style="color: var(--forest-green);"></h2>
+                        </div>
+                        
+                        <div id="options-container" class="space-y-4 mb-8">
+                            <!-- Options will be dynamically inserted here -->
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <button id="prev-btn" onclick="previousQuestion()" class="btn-primary px-6 py-3 rounded-full font-medium" disabled>
+                                Previous
+                            </button>
+                            <button id="next-btn" onclick="nextQuestion()" class="btn-primary px-6 py-3 rounded-full font-medium" disabled>
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Screen -->
+                <div id="results-screen" class="quiz-step">
+                    <div class="text-center mb-12">
+                        <h2 class="font-display text-4xl font-bold mb-6" style="color: var(--forest-green);">
+                            Your Green Skills Profile
+                        </h2>
+                        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                            Based on your responses, here's your personalized green skills assessment and learning recommendations.
+                        </p>
+                    </div>
+                    
+                    <!-- Skills Chart -->
+                    <div class="result-card">
+                        <h3 class="font-display text-2xl font-bold mb-6 text-center" style="color: var(--forest-green);">
+                            Skills Breakdown
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="skillsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Skill Categories Results -->
+                    <div id="skill-results" class="grid md:grid-cols-2 gap-6 mb-12">
+                        <!-- Results will be dynamically inserted here -->
+                    </div>
+                    
+                    <!-- Learning Recommendations -->
+                    <div class="result-card">
+                        <h3 class="font-display text-2xl font-bold mb-6" style="color: var(--forest-green);">
+                            Recommended Learning Path
+                        </h3>
+                        <div id="recommendations" class="space-y-4">
+                            <!-- Recommendations will be dynamically inserted here -->
+                        </div>
+                        <div class="text-center mt-8">
+                            <button onclick="window.location.href='resources.html'" class="btn-primary px-8 py-3 rounded-full font-semibold mr-4">
+                                Explore Resources
+                            </button>
+                            <button onclick="retakeQuiz()" class="border-2 border-green-600 text-green-600 px-8 py-3 rounded-full font-semibold hover:bg-green-600 hover:text-white transition-all duration-300">
+                                Retake Assessment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12" style="background: var(--charcoal);">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🌱</span>
+                    </div>
+                    <span class="font-display text-2xl font-bold text-white">Green Skills Ghana</span>
+                </div>
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Empowering Ghana's communities with green skills, sustainable practices, and climate resilience for a prosperous future.
+                </p>
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2025 Green Skills Ghana. Building sustainable futures together.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Quiz Data
+        const quizData = {
+            categories: [
+                {
+                    name: 'Renewable Energy',
+                    icon: '☀️',
+                    color: '#FF6B35',
+                    questions: [
+                        {
+                            question: "What is the most abundant renewable energy source in Ghana?",
+                            options: ["Wind power", "Solar energy", "Hydroelectric power", "Geothermal energy"],
+                            correct: 1,
+                            explanation: "Ghana receives abundant sunshine throughout the year, making solar energy the most abundant renewable resource."
+                        },
+                        {
+                            question: "Which renewable energy technology is most suitable for rural Ghanaian communities?",
+                            options: ["Large wind farms", "Solar home systems", "Nuclear power plants", "Coal power plants"],
+                            correct: 1,
+                            explanation: "Solar home systems are cost-effective and can be deployed quickly in off-grid rural areas."
+                        },
+                        {
+                            question: "What is the main advantage of renewable energy over fossil fuels?",
+                            options: ["Lower initial cost", "Unlimited supply", "Zero greenhouse gas emissions", "Easier to transport"],
+                            correct: 2,
+                            explanation: "Renewable energy produces minimal to zero greenhouse gas emissions during operation, helping combat climate change."
+                        },
+                        {
+                            question: "Which Ghanaian region has the highest solar potential?",
+                            options: ["Greater Accra", "Northern Region", "Ashanti Region", "Western Region"],
+                            correct: 1,
+                            explanation: "The Northern Region receives the most consistent solar radiation, making it ideal for solar energy projects."
+                        }
+                    ]
+                },
+                {
+                    name: 'Sustainable Agriculture',
+                    icon: '🌱',
+                    color: '#2D5016',
+                    questions: [
+                        {
+                            question: "What is climate-smart agriculture?",
+                            options: ["Using more fertilizers", "Practices that increase productivity and resilience", "Only organic farming", "Traditional farming methods"],
+                            correct: 1,
+                            explanation: "Climate-smart agriculture integrates practices that sustainably increase productivity, enhance resilience, and reduce emissions."
+                        },
+                        {
+                            question: "Which practice helps prevent soil erosion in Ghana?",
+                            options: ["Monoculture farming", "Contour farming", "Overgrazing", "Deforestation"],
+                            correct: 1,
+                            explanation: "Contour farming follows the natural landscape contours, reducing water runoff and soil erosion."
+                        },
+                        {
+                            question: "What is the benefit of crop rotation?",
+                            options: ["Higher profits only", "Soil health improvement and pest control", "Less labor required", "Faster growth"],
+                            correct: 1,
+                            explanation: "Crop rotation improves soil health, breaks pest cycles, and maintains soil nutrients naturally."
+                        },
+                        {
+                            question: "Which irrigation method is most water-efficient?",
+                            options: ["Flood irrigation", "Drip irrigation", "Sprinkler systems", "Manual watering"],
+                            correct: 1,
+                            explanation: "Drip irrigation delivers water directly to plant roots, minimizing evaporation and water waste."
+                        }
+                    ]
+                },
+                {
+                    name: 'Waste Management',
+                    icon: '♻️',
+                    color: '#1E90FF',
+                    questions: [
+                        {
+                            question: "What is the circular economy principle?",
+                            options: ["Use once and dispose", "Reduce, reuse, recycle", "Burn all waste", "Bury everything"],
+                            correct: 1,
+                            explanation: "The circular economy focuses on reducing waste through reuse, recycling, and sustainable design."
+                        },
+                        {
+                            question: "Which waste management method produces energy?",
+                            options: ["Landfilling", "Composting", "Waste-to-energy incineration", "Open burning"],
+                            correct: 2,
+                            explanation: "Waste-to-energy facilities burn waste to generate electricity while reducing landfill volume."
+                        },
+                        {
+                            question: "What is composting?",
+                            options: ["Burning organic waste", "Burying plastic", "Natural decomposition of organic matter", "Recycling metals"],
+                            correct: 2,
+                            explanation: "Composting is the natural process of breaking down organic materials into nutrient-rich soil amendment."
+                        },
+                        {
+                            question: "Which material takes the longest to decompose?",
+                            options: ["Paper", "Food waste", "Plastic bottles", "Wood"],
+                            correct: 2,
+                            explanation: "Plastic bottles can take 450+ years to decompose, making recycling crucial for environmental protection."
+                        }
+                    ]
+                },
+                {
+                    name: 'Green Construction',
+                    icon: '🏗️',
+                    color: '#8B4513',
+                    questions: [
+                        {
+                            question: "What makes a building 'green'?",
+                            options: ["Green paint color", "Sustainable materials and energy efficiency", "Location in forest", "Vegetation on walls"],
+                            correct: 1,
+                            explanation: "Green buildings use sustainable materials, efficient energy systems, and minimize environmental impact."
+                        },
+                        {
+                            question: "Which material is most sustainable for construction in Ghana?",
+                            options: ["Imported steel", "Locally sourced bamboo", "Concrete blocks", "Plastic panels"],
+                            correct: 1,
+                            explanation: "Bamboo grows quickly, is locally available, and has excellent structural properties with low environmental impact."
+                        },
+                        {
+                            question: "What is passive solar design?",
+                            options: ["Using solar panels only", "Designing buildings to maximize natural heating/cooling", "Painting buildings black", "Open floor plans"],
+                            correct: 1,
+                            explanation: "Passive solar design uses building orientation and materials to naturally regulate temperature."
+                        },
+                        {
+                            question: "Why is proper insulation important?",
+                            options: ["Only for soundproofing", "Reduces energy consumption for heating/cooling", "Makes buildings heavier", "Increases construction cost"],
+                            correct: 1,
+                            explanation: "Good insulation reduces the need for artificial heating and cooling, saving energy and money."
+                        }
+                    ]
+                },
+                {
+                    name: 'Climate Resilience',
+                    icon: '🌍',
+                    color: '#CD853F',
+                    questions: [
+                        {
+                            question: "What is climate resilience?",
+                            options: ["Ignoring climate change", "Ability to adapt and recover from climate impacts", "Moving to cooler areas", "Using more air conditioning"],
+                            correct: 1,
+                            explanation: "Climate resilience is the capacity to anticipate, prepare for, and respond to climate-related hazards."
+                        },
+                        {
+                            question: "Which practice helps communities adapt to drought?",
+                            options: ["Drilling more wells", "Rainwater harvesting", "Using more water", "Planting water-intensive crops"],
+                            correct: 1,
+                            explanation: "Rainwater harvesting captures and stores rainwater for dry periods, improving water security."
+                        },
+                        {
+                            question: "What is early warning system importance?",
+                            options: ["Only for research", "Helps communities prepare for disasters", "Creates panic", "Increases costs"],
+                            correct: 1,
+                            explanation: "Early warning systems provide critical time for communities to prepare and evacuate before disasters strike."
+                        },
+                        {
+                            question: "Which ecosystem provides natural flood protection?",
+                            options: ["Deserts", "Wetlands and mangroves", "Grasslands", "Urban areas"],
+                            correct: 1,
+                            explanation: "Wetlands and mangroves absorb floodwaters, reduce storm surge, and protect coastal communities."
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Quiz State
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let quizStarted = false;
+
+        // Initialize quiz
+        function startQuiz() {
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('quiz-container').classList.add('active');
+            quizStarted = true;
+            userAnswers = new Array(quizData.categories.reduce((sum, cat) => sum + cat.questions.length, 0)).fill(-1);
+            showQuestion(0);
+        }
+
+        function showQuestion(index) {
+            const questionData = getQuestionData(index);
+            const category = getCategoryForQuestion(index);
+            
+            document.getElementById('question-category').textContent = category.name;
+            document.getElementById('question-number').textContent = `Question ${index + 1} of ${userAnswers.length}`;
+            document.getElementById('question-text').textContent = questionData.question;
+            
+            // Update progress
+            const newProgress = ((index + 1) / userAnswers.length) * 100;
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            // Animate progress bar width
+            progressBar.style.width = `${newProgress}%`;
+            
+            // Animate progress text
+            const currentProgress = parseFloat(progressText.dataset.progress || 0);
+            anime({
+                targets: { value: currentProgress },
+                value: newProgress,
+                round: 1,
+                easing: 'easeInOutQuad',
+                duration: 400,
+                update: function(anim) {
+                    const roundedValue = Math.round(anim.animatables[0].target.value);
+                    progressText.textContent = `${roundedValue}% Complete`;
+                    progressText.dataset.progress = roundedValue;
+                }
+            });
+
+            // Show options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            questionData.options.forEach((option, optionIndex) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `option-card p-4 rounded-lg ${userAnswers[index] === optionIndex ? 'selected' : ''}`;
+                optionDiv.onclick = () => selectOption(index, optionIndex);
+                optionDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full mr-4 flex items-center justify-center">
+                            <div class="w-3 h-3 bg-orange-500 rounded-full ${userAnswers[index] === optionIndex ? '' : 'hidden'}"></div>
+                        </div>
+                        <span class="text-gray-700">${option}</span>
+                    </div>
+                `;
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = index === 0;
+            document.getElementById('next-btn').disabled = userAnswers[index] === -1;
+            document.getElementById('next-btn').textContent = index === userAnswers.length - 1 ? 'Finish' : 'Next';
+        }
+
+        function selectOption(questionIndex, optionIndex) {
+            userAnswers[questionIndex] = optionIndex;
+            
+            // Update UI
+            const options = document.querySelectorAll('.option-card');
+            options.forEach((option, index) => {
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                    option.querySelector('.w-3').classList.remove('hidden');
+                } else {
+                    option.classList.remove('selected');
+                    option.querySelector('.w-3').classList.add('hidden');
+                }
+            });
+            
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < userAnswers.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function getQuestionData(index) {
+            let currentIndex = 0;
+            for (const category of quizData.categories) {
+                if (index < currentIndex + category.questions.length) {
+                    return category.questions[index - currentIndex];
+                }
+                currentIndex += category.questions.length;
+            }
+        }
+
+        function getCategoryForQuestion(index) {
+            let currentIndex = 0;
+            for (const category of quizData.categories) {
+                if (index < currentIndex + category.questions.length) {
+                    return category;
+                }
+                currentIndex += category.questions.length;
+            }
+        }
+
+        function calculateResults() {
+            const results = {};
+            let questionIndex = 0;
+            
+            quizData.categories.forEach(category => {
+                let correct = 0;
+                let total = category.questions.length;
+                
+                for (let i = 0; i < total; i++) {
+                    if (userAnswers[questionIndex + i] === category.questions[i].correct) {
+                        correct++;
+                    }
+                }
+                
+                results[category.name] = {
+                    correct,
+                    total,
+                    percentage: Math.round((correct / total) * 100),
+                    icon: category.icon,
+                    color: category.color
+                };
+                
+                questionIndex += total;
+            });
+            
+            return results;
+        }
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.remove('active');
+            document.getElementById('results-screen').classList.add('active');
+            
+            const results = calculateResults();
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            // Create chart
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            const labels = Object.keys(results);
+            const data = labels.map(label => results[label].percentage);
+            const colors = labels.map(label => results[label].color);
+            
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Your Skills',
+                        data: data,
+                        backgroundColor: colors.map(color => color + '40'),
+                        borderColor: colors,
+                        borderWidth: 2,
+                        pointBackgroundColor: colors,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: colors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Display skill results
+            const skillResultsContainer = document.getElementById('skill-results');
+            skillResultsContainer.innerHTML = '';
+            
+            Object.entries(results).forEach(([skillName, result]) => {
+                const skillDiv = document.createElement('div');
+                skillDiv.className = 'result-card text-center';
+                skillDiv.innerHTML = `
+                    <div class="skill-badge" style="background: linear-gradient(135deg, ${result.color}, ${result.color}CC);">
+                        ${result.icon}
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-2" style="color: var(--forest-green);">${skillName}</h3>
+                    <div class="text-3xl font-bold mb-2" style="color: ${result.color};">${result.percentage}%</div>
+                    <div class="text-sm text-gray-600 mb-4">${result.correct} out of ${result.total} correct</div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="h-2 rounded-full" style="background: ${result.color}; width: ${result.percentage}%;"></div>
+                    </div>
+                `;
+                skillResultsContainer.appendChild(skillDiv);
+            });
+            
+            // Generate recommendations
+            generateRecommendations(results);
+        }
+
+        function generateRecommendations(results) {
+            const recommendationsContainer = document.getElementById('recommendations');
+            const sortedSkills = Object.entries(results).sort((a, b) => a[1].percentage - b[1].percentage);
+            
+            recommendationsContainer.innerHTML = '';
+            
+            sortedSkills.forEach(([skillName, result], index) => {
+                const level = result.percentage >= 80 ? 'Advanced' : result.percentage >= 60 ? 'Intermediate' : 'Beginner';
+                const priority = index === 0 ? 'High Priority' : index === 1 ? 'Medium Priority' : 'Low Priority';
+                
+                const recDiv = document.createElement('div');
+                recDiv.className = 'flex items-center p-4 bg-gray-50 rounded-lg';
+                recDiv.innerHTML = `
+                    <div class="skill-badge w-12 h-12 text-lg mr-4" style="background: linear-gradient(135deg, ${result.color}, ${result.color}CC);">
+                        ${result.icon}
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold" style="color: var(--forest-green);">${skillName} - ${level}</h4>
+                        <p class="text-sm text-gray-600">${priority} • ${result.percentage}% proficiency</p>
+                    </div>
+                    <div class="text-sm font-medium px-3 py-1 rounded-full ${
+                        priority === 'High Priority' ? 'bg-red-100 text-red-800' :
+                        priority === 'Medium Priority' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                    }">
+                        ${priority.split(' ')[0]}
+                    </div>
+                `;
+                recommendationsContainer.appendChild(recDiv);
+            });
+        }
+
+        function retakeQuiz() {
+            if (confirm("Are you sure you want to retake the assessment? Your current results will be lost.")) {
+                currentQuestion = 0;
+                userAnswers = [];
+                quizStarted = false;
+                
+                document.getElementById('results-screen').classList.remove('active');
+                document.getElementById('start-screen').classList.add('active');
+                
+                // Reset progress bar
+                document.getElementById('progress-bar').style.width = '0%';
+                document.getElementById('progress-text').textContent = '0% Complete';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hamburger Menu Toggle
+            const hamburgerBtn = document.getElementById('hamburger-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const hamburgerIcon = hamburgerBtn.querySelector('i');
+            hamburgerBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                hamburgerIcon.classList.toggle('fa-bars');
+                hamburgerIcon.classList.toggle('fa-times');
+            });
+            // Add smooth scrolling and animations
+            const elements = document.querySelectorAll('.quiz-card, .result-card');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    anime({
+                        targets: el,
+                        opacity: [0, 1],
+                        translateY: [30, 0],
+                        duration: 800,
+                        easing: 'easeOutQuart'
+                    });
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

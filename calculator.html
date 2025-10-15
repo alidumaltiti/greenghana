@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Footprint Calculator - Green Skills Ghana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest-green: #2D5016;
+            --earth-brown: #8B4513;
+            --sunset-orange: #FF6B35;
+            --savannah-gold: #DAA520;
+            --ocean-blue: #1E90FF;
+            --clay-red: #CD853F;
+            --cream-white: #FFF8DC;
+            --charcoal: #2F2F2F;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--cream-white) 0%, var(--savannah-gold) 100%);
+            color: var(--charcoal);
+            overflow-x: hidden;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-script { font-family: 'Dancing Script', cursive; }
+        
+        .glass-nav {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 248, 220, 0.9);
+            border-bottom: 1px solid rgba(45, 80, 22, 0.1);
+        }
+        
+        .calculator-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(45, 80, 22, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .input-group {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(45, 80, 22, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .input-group:focus-within {
+            border-color: var(--forest-green);
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+        
+        .btn-primary {
+            background: var(--forest-green);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--earth-brown);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(45, 80, 22, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-metric {
+            background: linear-gradient(135deg, var(--sunset-orange), var(--clay-red));
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+        }
+        
+        .comparison-bar {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .comparison-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--sunset-orange);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+        }
+        
+        .recommendation-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid var(--forest-green);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stagger-fade {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .calculator-step {
+            display: none;
+        }
+        
+        .calculator-step.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+            .no-print {
+                display: none;
+            }
+            .calculator-card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full top-0 z-50 py-4 no-print">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🌱</span>
+                    </div>
+                    <span class="font-display text-2xl font-bold" style="color: var(--forest-green);">Green Skills Ghana</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link font-medium">Home</a>
+                    <a href="About.html" class="nav-link font-medium dark-nav-text">About</a>
+                    <a href="assessment.html" class="nav-link font-medium">Assessment</a>
+                    <a href="calculator.html" class="nav-link font-medium text-orange-500">Calculator</a>
+                    <a href="resources.html" class="nav-link font-medium">Resources</a>
+                    <button onclick="window.location.href='index.html'" class="btn-primary px-6 py-2 rounded-full font-medium">Back to Home</button>
+                </div>
+                <!-- Hamburger Menu -->
+                <div class="md:hidden">
+                    <button id="hamburger-btn" class="text-2xl" style="color: var(--forest-green);">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+                <a href="index.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Home</a>
+                <a href="About.html" class="nav-link font-medium dark-nav-text">About</a>
+                <a href="assessment.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Assessment</a>
+                <a href="calculator.html" class="block py-2 px-4 text-sm bg-green-100 text-green-800 rounded">Calculator</a>
+                <a href="resources.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12">
+        <div class="container mx-auto px-6">
+            <!-- Header Section -->
+            <div class="text-center mb-12 no-print">
+                <h1 class="font-display text-5xl font-bold mb-6 stagger-fade" style="color: var(--forest-green);">
+                    Carbon Footprint Calculator
+                </h1>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8 stagger-fade">
+                    Understand your environmental impact with Ghana-specific data and discover personalized ways to reduce your carbon footprint.
+                </p>
+            </div>
+
+            <!-- Calculator Container -->
+            <div class="max-w-6xl mx-auto">
+                <!-- Input Form -->
+                <div id="calculator-form" class="calculator-step active no-print">
+                    <div class="calculator-card rounded-2xl p-8 mb-8">
+                        <h2 class="font-display text-3xl font-bold mb-8 text-center" style="color: var(--forest-green);">
+                            Calculate Your Annual Carbon Footprint
+                        </h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <!-- Energy Usage -->
+                            <div class="space-y-6">
+                                <h3 class="font-display text-2xl font-bold mb-4" style="color: var(--sunset-orange);">🏠 Energy Usage</h3>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Monthly Electricity Bill (GHS)
+                                    </label>
+                                    <input type="number" id="electricity-bill" class="w-full p-3 border-0 bg-transparent focus:outline-none" 
+                                           placeholder="e.g., 150" min="0" step="1">
+                                    <p class="text-xs text-gray-500 mt-1">Average Ghanaian household: GHS 120-200/month</p>
+                                </div>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Cooking Fuel Type
+                                    </label>
+                                    <select id="cooking-fuel" class="w-full p-3 border-0 bg-transparent focus:outline-none">
+                                        <option value="">Select fuel type</option>
+                                        <option value="lpg">LPG/Natural Gas</option>
+                                        <option value="charcoal">Charcoal</option>
+                                        <option value="firewood">Firewood</option>
+                                        <option value="electricity">Electricity</option>
+                                        <option value="hybrid">Mixed/Hybrid</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Household Size
+                                    </label>
+                                    <input type="number" id="household-size" class="w-full p-3 border-0 bg-transparent focus:outline-none" 
+                                           placeholder="e.g., 4" min="1" max="20" step="1">
+                                    <p class="text-xs text-gray-500 mt-1">Average Ghanaian household: 4-6 people</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Transportation -->
+                            <div class="space-y-6">
+                                <h3 class="font-display text-2xl font-bold mb-4" style="color: var(--ocean-blue);">🚗 Transportation</h3>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Primary Transport Mode
+                                    </label>
+                                    <select id="transport-mode" class="w-full p-3 border-0 bg-transparent focus:outline-none">
+                                        <option value="">Select transport mode</option>
+                                        <option value="trotro">Trotro/Minibus</option>
+                                        <option value="taxi">Taxi</option>
+                                        <option value="private-car">Private Car</option>
+                                        <option value="motorcycle">Motorcycle</option>
+                                        <option value="walking">Walking/Cycling</option>
+                                        <option value="mixed">Mixed Modes</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Weekly Travel Distance (km)
+                                    </label>
+                                    <input type="number" id="weekly-distance" class="w-full p-3 border-0 bg-transparent focus:outline-none" 
+                                           placeholder="e.g., 50" min="0" step="1">
+                                    <p class="text-xs text-gray-500 mt-1">Work, school, and daily activities</p>
+                                </div>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Flights per Year
+                                    </label>
+                                    <input type="number" id="annual-flights" class="w-full p-3 border-0 bg-transparent focus:outline-none" 
+                                           placeholder="e.g., 2" min="0" step="1">
+                                    <p class="text-xs text-gray-500 mt-1">Domestic and international flights</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Diet & Lifestyle -->
+                            <div class="space-y-6">
+                                <h3 class="font-display text-2xl font-bold mb-4" style="color: var(--clay-red);">🍽️ Diet & Lifestyle</h3>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Diet Type
+                                    </label>
+                                    <select id="diet-type" class="w-full p-3 border-0 bg-transparent focus:outline-none">
+                                        <option value="">Select diet type</option>
+                                        <option value="heavy-meat">Heavy Meat Consumer</option>
+                                        <option value="average-meat">Average Meat Consumer</option>
+                                        <option value="low-meat">Low Meat Consumer</option>
+                                        <option value="pescatarian">Pescatarian</option>
+                                        <option value="vegetarian">Vegetarian</option>
+                                        <option value="vegan">Vegan</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Local vs Imported Food
+                                    </label>
+                                    <select id="food-source" class="w-full p-3 border-0 bg-transparent focus:outline-none">
+                                        <option value="">Select food sourcing</option>
+                                        <option value="mostly-local">Mostly Local (80%+)</option>
+                                        <option value="balanced">Balanced Local/Imported</option>
+                                        <option value="mostly-imported">Mostly Imported (80%+)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Consumption -->
+                            <div class="space-y-6">
+                                <h3 class="font-display text-2xl font-bold mb-4" style="color: var(--forest-green);">🛍️ Consumption</h3>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Shopping Habits
+                                    </label>
+                                    <select id="shopping-habits" class="w-full p-3 border-0 bg-transparent focus:outline-none">
+                                        <option value="">Select shopping pattern</option>
+                                        <option value="minimalist">Minimalist/Buy Less</option>
+                                        <option value="average">Average Consumer</option>
+                                        <option value="frequent">Frequent Shopper</option>
+                                        <option value="heavy">Heavy Consumer</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="input-group rounded-lg p-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Waste Recycling Level
+                                    </label>
+                                    <select id="recycling-level" class="w-full p-3 border-0 bg-transparent focus:outline-none">
+                                        <option value="">Select recycling level</option>
+                                        <option value="none">No Recycling</option>
+                                        <option value="minimal">Minimal Recycling</option>
+                                        <option value="moderate">Moderate Recycling</option>
+                                        <option value="extensive">Extensive Recycling</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-8">
+                            <button onclick="calculateFootprint()" class="btn-primary px-12 py-4 rounded-full text-lg font-semibold">
+                                Calculate My Carbon Footprint
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Screen -->
+                <div id="results-screen" class="calculator-step">
+                    <!-- Results will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 no-print" style="background: var(--charcoal);">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🌱</span>
+                    </div>
+                    <span class="font-display text-2xl font-bold text-white">Green Skills Ghana</span>
+                </div>
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Empowering Ghana's communities with green skills, sustainable practices, and climate resilience for a prosperous future.
+                </p>
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2025 Green Skills Ghana. Building sustainable futures together.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Ghana-specific carbon emission factors (kg CO2e)
+        const emissionFactors = {
+            electricity: 0.45, // kg CO2e per kWh (Ghana grid mix)
+            lpg: 1.6, // kg CO2e per kg
+            charcoal: 3.7, // kg CO2e per kg
+            firewood: 1.9, // kg CO2e per kg
+            transport: {
+                'trotro': 0.08, // kg CO2e per km
+                'taxi': 0.15,
+                'private-car': 0.21,
+                'motorcycle': 0.08,
+                'walking': 0,
+                'mixed': 0.12
+            },
+            flights: {
+                domestic: 90, // kg CO2e per flight
+                international: 250
+            },
+            diet: {
+                'heavy-meat': 3.3, // tonnes CO2e per year
+                'average-meat': 2.5,
+                'low-meat': 1.9,
+                'pescatarian': 1.6,
+                'vegetarian': 1.2,
+                'vegan': 1.0
+            },
+            foodTransport: {
+                'mostly-local': 0.2,
+                'balanced': 0.4,
+                'mostly-imported': 0.8
+            },
+            consumption: {
+                'minimalist': 0.5,
+                'average': 1.0,
+                'frequent': 1.5,
+                'heavy': 2.0
+            },
+            waste: {
+                'none': 0.8,
+                'minimal': 0.6,
+                'moderate': 0.4,
+                'extensive': 0.2
+            }
+        };
+
+        // Average Ghanaian carbon footprint (tonnes CO2e per year)
+        const ghanaAverage = 2.3;
+        // Global average carbon footprint
+        const globalAverage = 4.8;
+        // Paris Agreement target
+        const parisTarget = 2.0;
+
+        function calculateFootprint() {
+            // Get form values
+            const formData = {
+                electricityBill: parseFloat(document.getElementById('electricity-bill').value) || 0,
+                cookingFuel: document.getElementById('cooking-fuel').value,
+                householdSize: parseInt(document.getElementById('household-size').value) || 1,
+                transportMode: document.getElementById('transport-mode').value,
+                weeklyDistance: parseFloat(document.getElementById('weekly-distance').value) || 0,
+                annualFlights: parseInt(document.getElementById('annual-flights').value) || 0,
+                dietType: document.getElementById('diet-type').value,
+                foodSource: document.getElementById('food-source').value,
+                shoppingHabits: document.getElementById('shopping-habits').value,
+                recyclingLevel: document.getElementById('recycling-level').value
+            };
+
+            // Validate required fields
+            const requiredFields = ['cookingFuel', 'transportMode', 'dietType', 'foodSource', 'shoppingHabits', 'recyclingLevel'];
+            const missingFields = requiredFields.filter(field => !formData[field]);
+            
+            if (missingFields.length > 0) {
+                const missingFieldsFormatted = missingFields.map(field => {
+                    // Convert camelCase to a more readable format, e.g., 'cookingFuel' to 'Cooking Fuel'
+                    const readableName = field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                    return readableName;
+                });
+
+                // Alert the user with a more specific message
+                alert(`Please fill in the following required fields before calculating:\n- ${missingFieldsFormatted.join('\n- ')}`);
+                return;
+            }
+
+            // Calculate emissions
+            const emissions = calculateEmissions(formData);
+            
+            // Show results
+            showResults(emissions, formData);
+        }
+
+        function calculateEmissions(data) {
+            let totalEmissions = 0;
+            const breakdown = {};
+
+            // Energy emissions
+            // Assumption: Average electricity tariff is 0.8 GHS/kWh. This is a simplification.
+            const electricityKwh = (data.electricityBill / 0.8) * 12; 
+            const electricityEmissions = electricityKwh * emissionFactors.electricity / 1000; // Convert to tonnes
+            
+            // Assumption: Average consumption for different cooking fuels. This is a simplification.
+            let cookingEmissions = 0;
+            switch(data.cookingFuel) {
+                case 'lpg':
+                    cookingEmissions = 0.3; // Average household consumption
+                    break;
+                case 'charcoal':
+                    cookingEmissions = 0.8;
+                    break;
+                case 'firewood':
+                    cookingEmissions = 0.4;
+                    break;
+                case 'electricity':
+                    cookingEmissions = 0.2;
+                    break;
+                case 'hybrid':
+                    cookingEmissions = 0.5;
+                    break;
+            }
+
+            breakdown.energy = electricityEmissions + cookingEmissions;
+            totalEmissions += breakdown.energy;
+
+            // Transportation emissions
+            const weeklyTransportEmissions = data.weeklyDistance * emissionFactors.transport[data.transportMode];
+            const annualTransportEmissions = weeklyTransportEmissions * 52 / 1000; // Convert to tonnes
+            
+            // Assume an average flight is a mix of domestic and international
+            const averageFlightEmissions = (emissionFactors.flights.domestic + emissionFactors.flights.international) / 2;
+            const flightEmissions = data.annualFlights * averageFlightEmissions / 1000; 
+            
+            breakdown.transport = annualTransportEmissions + flightEmissions;
+            totalEmissions += breakdown.transport;
+
+            // Diet emissions
+            breakdown.diet = emissionFactors.diet[data.dietType] + emissionFactors.foodTransport[data.foodSource];
+            totalEmissions += breakdown.diet;
+
+            // Consumption emissions are added, not multiplied
+            breakdown.consumption = emissionFactors.consumption[data.shoppingHabits] + emissionFactors.waste[data.recyclingLevel];
+            totalEmissions += breakdown.consumption;
+
+            // Calculate per-person emissions before household adjustment for comparison
+            const perPersonEmissions = totalEmissions / data.householdSize;
+
+
+            return {
+                total: totalEmissions, // Total for the household
+                perPerson: perPersonEmissions, // Per person
+                breakdown: breakdown,
+                householdSize: data.householdSize
+            };
+        }
+
+        function showResults(emissions, formData) {
+            document.getElementById('calculator-form').classList.remove('active');
+            
+            const resultsScreen = document.getElementById('results-screen');
+            resultsScreen.innerHTML = `
+                <div class="calculator-card rounded-2xl p-8 mb-8">
+                    <div class="text-center mb-12">
+                        <h2 class="font-display text-4xl font-bold mb-6" style="color: var(--forest-green);">
+                            Your Carbon Footprint Results
+                        </h2>
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div class="result-metric max-w-md mx-auto">
+                                <div class="text-5xl font-bold mb-2">${emissions.total.toFixed(1)}</div>
+                                <div class="text-xl">Tonnes CO₂e / year</div>
+                                <div class="text-sm opacity-90 mt-2">For your household of ${formData.householdSize}</div>
+                            </div>
+                            <div class="result-metric max-w-md mx-auto bg-blue-500">
+                                <div class="text-5xl font-bold mb-2">${emissions.perPerson.toFixed(1)}</div>
+                                <div class="text-xl">Tonnes CO₂e / year</div>
+                                <div class="text-sm opacity-90 mt-2">Per person</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comparison Chart -->
+                    <div class="mb-12">
+                        <h3 class="font-display text-2xl font-bold mb-6 text-center" style="color: var(--forest-green);">
+                            How You Compare (per person)
+                        </h3>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-medium">Your Footprint</span>
+                                    <span class="font-bold">${emissions.perPerson.toFixed(1)} tonnes</span>
+                                </div>
+                                <div class="comparison-bar">
+                                    <div class="comparison-fill bg-gradient-to-r from-orange-500 to-red-500" 
+                                         style="width: ${Math.min((emissions.perPerson / globalAverage) * 100, 100)}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-medium">Ghana Average</span>
+                                    <span class="font-bold">${ghanaAverage} tonnes</span>
+                                </div>
+                                <div class="comparison-bar">
+                                    <div class="comparison-fill bg-yellow-500" 
+                                         style="width: ${(ghanaAverage / globalAverage) * 100}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-medium">Global Average</span>
+                                    <span class="font-bold">${globalAverage} tonnes</span>
+                                </div>
+                                <div class="comparison-bar">
+                                    <div class="comparison-fill bg-gray-500" 
+                                         style="width: 100%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-medium">Paris Agreement Target</span>
+                                    <span class="font-bold">${parisTarget} tonnes</span>
+                                </div>
+                                <div class="comparison-bar">
+                                    <div class="comparison-fill bg-green-500" 
+                                         style="width: ${(parisTarget / globalAverage) * 100}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Emissions Breakdown Chart -->
+                    <div class="mb-12">
+                        <h3 class="font-display text-2xl font-bold mb-6 text-center" style="color: var(--forest-green);">
+                            Emissions Breakdown (Household)
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="emissionsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Personalized Recommendations -->
+                    <div class="mb-12">
+                        <h3 class="font-display text-2xl font-bold mb-6" style="color: var(--forest-green);">
+                            Your Personalized Action Plan
+                        </h3>
+                        <div id="recommendations-container">
+                            ${generateRecommendations(emissions, formData)}
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="text-center no-print">
+                        <button onclick="retakeCalculator()" class="btn-primary px-8 py-3 rounded-full font-semibold mr-4">
+                            Recalculate
+                        </button>
+                        <button onclick="window.location.href='resources.html'" class="border-2 border-green-600 text-green-600 px-8 py-3 rounded-full font-semibold hover:bg-green-600 hover:text-white transition-all duration-300 mr-4">
+                            Find Green Solutions
+                        </button>
+                        <button onclick="printResults()" class="border-2 border-blue-500 text-blue-500 px-8 py-3 rounded-full font-semibold hover:bg-blue-500 hover:text-white transition-all duration-300">
+                            Print Results
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Create emissions breakdown chart
+            createEmissionsChart(emissions.breakdown);
+            
+            // Animate results
+            anime({
+                targets: '.result-metric',
+                scale: [0.8, 1],
+                opacity: [0, 1],
+                duration: 1000,
+                delay: anime.stagger(200),
+                easing: 'easeOutElastic(1, .8)'
+            });
+            
+            // Animate comparison bars
+            setTimeout(() => {
+                document.querySelectorAll('.comparison-fill').forEach((bar, index) => {
+                    anime({
+                        targets: bar,
+                        width: bar.style.width,
+                        duration: 1500,
+                        delay: index * 200,
+                        easing: 'easeOutQuart'
+                    });
+                });
+            }, 500);
+            
+            resultsScreen.classList.add('active');
+        }
+
+        function createEmissionsChart(breakdown) {
+            const ctx = document.getElementById('emissionsChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Energy', 'Transport', 'Diet', 'Consumption'],
+                    datasets: [{
+                        data: [breakdown.energy, breakdown.transport, breakdown.diet, breakdown.consumption],
+                        backgroundColor: [
+                            '#FF6B35',
+                            '#1E90FF',
+                            '#CD853F',
+                            '#2D5016'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label;
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value.toFixed(1)} tonnes (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateRecommendations(emissions, formData) {
+            let recommendations = [];
+            const breakdown = emissions.breakdown;
+
+            // Sort categories by emission amount
+            const sortedCategories = Object.keys(breakdown).sort((a, b) => breakdown[b] - breakdown[a]);
+
+            // Generate recommendations for the top 2-3 categories
+            for (let i = 0; i < Math.min(sortedCategories.length, 3); i++) {
+                const category = sortedCategories[i];
+                if (category === 'energy' && breakdown.energy > 0.5) {
+                    if (formData.cookingFuel === 'charcoal' || formData.cookingFuel === 'firewood') {
+                        recommendations.push({
+                            icon: '🔥',
+                            title: 'Switch to Clean Cooking',
+                            description: 'Transition to LPG or an electric stove. This is one of the most impactful changes for both your health and the environment.',
+                            impact: 'High',
+                            priority: 'high'
+                        });
+                    } else {
+                        recommendations.push({
+                            icon: '☀️',
+                            title: 'Embrace Solar & Efficiency',
+                            description: 'Consider installing solar panels or using solar-powered appliances. Even small changes like switching to LED bulbs can make a big difference.',
+                            impact: 'High',
+                            priority: 'high'
+                        });
+                    }
+                }
+
+                if (category === 'transport' && breakdown.transport > 0.5) {
+                     if (formData.transportMode === 'private-car') {
+                        recommendations.push({
+                            icon: '🚌',
+                            title: 'Rethink Your Commute',
+                            description: 'Using a trotro, ride-sharing, or even a motorcycle for some trips can significantly cut your transport emissions.',
+                            impact: 'High',
+                            priority: 'high'
+                        });
+                    } else {
+                        recommendations.push({
+                            icon: '✈️',
+                            title: 'Fly Smarter',
+                            description: 'When possible, choose direct flights and pack light. For domestic travel, consider alternatives like buses for shorter distances.',
+                            impact: 'Medium',
+                            priority: 'medium'
+                        });
+                    }
+                }
+
+                if (category === 'diet' && breakdown.diet > 1.5) {
+                    if (formData.dietType.includes('meat')) {
+                        recommendations.push({
+                            icon: '🥗',
+                            title: 'Eat More Local Plants',
+                            description: 'Reducing meat consumption, even by a day or two a week, and choosing local produce makes a huge impact. Explore Ghana\'s rich variety of vegetables and legumes.',
+                            impact: 'High',
+                            priority: 'high'
+                        });
+                    }
+                     if (formData.foodSource === 'mostly-imported') {
+                        recommendations.push({
+                            icon: '🌾',
+                            title: 'Choose Ghanaian First',
+                            description: 'Support local farmers and reduce food miles by consciously buying food produced in Ghana. Check labels and visit local markets.',
+                            impact: 'Medium',
+                            priority: 'medium'
+                        });
+                    }
+                }
+
+                if (category === 'consumption' && breakdown.consumption > 1.0) {
+                    if (formData.shoppingHabits === 'frequent' || formData.shoppingHabits === 'heavy') {
+                        recommendations.push({
+                            icon: '🛍️',
+                            title: 'Shop Second-Hand & Local',
+                            description: 'Before buying new, explore second-hand markets. Support local artisans and brands to reduce shipping emissions and support the local economy.',
+                            impact: 'Medium',
+                            priority: 'medium'
+                        });
+                    }
+                    if (formData.recyclingLevel === 'none' || formData.recyclingLevel === 'minimal') {
+                        recommendations.push({
+                            icon: '♻️',
+                            title: 'Step Up Your Recycling Game',
+                            description: 'Many services in Ghana now recycle plastics and other materials. Start segregating your waste and find a local collection point.',
+                            impact: 'Low',
+                            priority: 'low'
+                        });
+                    }
+                }
+            }
+
+            // Ensure at least 2 recommendations are shown
+            if (recommendations.length < 2) {
+                 recommendations.push({
+                    icon: '💡',
+                    title: 'General Tip: Unplug Electronics',
+                    description: 'Unplug chargers and electronics when not in use to avoid \'vampire\' power consumption, a small but easy way to save energy.',
+                    impact: 'Low',
+                    priority: 'low'
+                });
+                recommendations.push({
+                    icon: '💧',
+                    title: 'Conserve Water',
+                    description: 'Water processing and pumping requires energy. Conserving water, especially hot water, helps reduce your indirect carbon footprint.',
+                    impact: 'Low',
+                    priority: 'low'
+                });
+            }
+            
+            // Generate HTML
+            return recommendations.slice(0, 3).map(rec => `
+                <div class="recommendation-card">
+                    <div class="flex items-start">
+                        <div class="text-2xl mr-4">${rec.icon}</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg mb-2" style="color: var(--forest-green);">${rec.title}</h4>
+                            <p class="text-gray-600 mb-3">${rec.description}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-green-600">Impact: ${rec.impact}</span>
+                                <span class="text-xs px-2 py-1 rounded-full ${
+                                    rec.priority === 'high' ? 'bg-red-100 text-red-800' :
+                                    rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-green-100 text-green-800'
+                                }">
+                                    ${rec.priority} priority
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function retakeCalculator() {
+            document.getElementById('results-screen').classList.remove('active');
+            document.getElementById('calculator-form').classList.add('active');
+            
+            // Reset form
+            document.getElementById('electricity-bill').value = '';
+            document.getElementById('cooking-fuel').value = '';
+            document.getElementById('household-size').value = '';
+            document.getElementById('transport-mode').value = '';
+            document.getElementById('weekly-distance').value = '';
+            document.getElementById('annual-flights').value = '';
+            document.getElementById('diet-type').value = '';
+            document.getElementById('food-source').value = '';
+            document.getElementById('shopping-habits').value = '';
+            document.getElementById('recycling-level').value = '';
+        }
+
+        function printResults() {
+            window.print();
+        }
+
+        // Initialize page animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hamburger Menu Toggle
+            const hamburgerBtn = document.getElementById('hamburger-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const hamburgerIcon = hamburgerBtn.querySelector('i');
+
+            hamburgerBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                hamburgerIcon.classList.toggle('fa-bars');
+                hamburgerIcon.classList.toggle('fa-times');
+            });
+
+
+            const elements = document.querySelectorAll('.stagger-fade');
+            
+            anime({
+                targets: elements,
+                opacity: [0, 1],
+                translateY: [30, 0],
+                delay: anime.stagger(200),
+                duration: 800,
+                easing: 'easeOutQuart'
+            });
+            
+            // Animate input groups
+            const inputGroups = document.querySelectorAll('.input-group');
+            inputGroups.forEach((group, index) => {
+                group.style.opacity = '0';
+                group.style.transform = 'translateX(-30px)';
+                
+                setTimeout(() => {
+                    anime({
+                        targets: group,
+                        opacity: [0, 1],
+                        translateX: [-30, 0],
+                        duration: 600,
+                        easing: 'easeOutQuart'
+                    });
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
