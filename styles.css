@@ -65,7 +65,7 @@ body.dark-mode {
 .glass-nav {
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    background: rgba(47, 47, 47, 0.85); /* --charcoal with transparency */
+    background: green; /* --charcoal with transparency */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
@@ -249,7 +249,7 @@ body.dark-mode {
 .pulse-circle {
     width: 150px;
     height: 150px;
-    background-color: green;
+    background-color: var(--forest-green);
     border-radius: 50%;
     position: relative;
     animation: pulse 2s infinite;
