@@ -48,33 +48,46 @@ document.addEventListener('DOMContentLoaded', function () {
         hamburgerIcon.classList.toggle('fa-times');
     });
 
+    const resourcesBtn = document.getElementById('resources-btn');
+    const resourcesMenu = document.getElementById('resources-menu');
+
+    if(resourcesBtn) {
+        resourcesBtn.addEventListener('click', () => {
+            resourcesMenu.classList.toggle('hidden');
+        });
+    }
+
     // Staggered fade-in animation for elements with the 'stagger-fade' class
     const fadeElements = document.querySelectorAll('.stagger-fade');
-    anime({
-        targets: fadeElements,
-        translateY: [30, 0],
-        opacity: [0, 1],
-        delay: anime.stagger(100, { start: 200 }),
-        easing: 'easeOutExpo',
-        duration: 1200,
-    });
+    if(typeof anime !== 'undefined') {
+        anime({
+            targets: fadeElements,
+            translateY: [30, 0],
+            opacity: [0, 1],
+            delay: anime.stagger(100, { start: 200 }),
+            easing: 'easeOutExpo',
+            duration: 1200,
+        });
+    }
 
     // Counting animation for statistics
     const countElements = document.querySelectorAll('[data-count]');
-    countElements.forEach(el => {
-        const target = parseFloat(el.getAttribute('data-count'));
-        anime({
-            targets: el,
-            innerHTML: [0, target],
-            round: target % 1 !== 0 ? 100 : 1, // Round to 2 decimal places if it's a float
-            easing: 'easeOutCirc',
-            duration: 2500,
-            delay: 500,
+    if(typeof anime !== 'undefined') {
+        countElements.forEach(el => {
+            const target = parseFloat(el.getAttribute('data-count'));
+            anime({
+                targets: el,
+                innerHTML: [0, target],
+                round: target % 1 !== 0 ? 100 : 1, // Round to 2 decimal places if it's a float
+                easing: 'easeOutCirc',
+                duration: 2500,
+                delay: 500,
+            });
         });
-    });
+    }
 
     // Initialize Splide carousel for success stories
-    if (document.getElementById('success-stories')) {
+    if (document.getElementById('success-stories') && typeof Splide !== 'undefined') {
         new Splide('#success-stories', {
             type: 'loop',
             perPage: 2,

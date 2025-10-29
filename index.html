@@ -18,23 +18,23 @@
                     <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center">
                         <span class="text-white font-bold text-lg"><a href="index.html">🌱</a></span>
                     </div>
-                    <span class="font-display text-2xl font-bold dark-nav-text">Green Ghana</span>
+                    <span class="font-display text-2xl font-bold">Green Ghana</span>
                 </div>
                 
                 <!-- Desktop Menu - Centered -->
                 <div class="md:flex flex-1 justify-center items-center space-x-8">
-                    <a href="#home" class="nav-link font-medium dark-nav-text"><i class="fas fa-home"></i>Home</a>
-                    <a href="About.html" class="nav-link font-medium dark-nav-text"><i class="fas fa-home"></i>About</a>
-                    <a href="assessment.html" class="nav-link font-medium dark-nav-text"><i class="fas fa-chalkboard-teacher"></i> Assessment</a>
-                    <a href="calculator.html" class="nav-link font-medium dark-nav-text"><i class="fas fa-calculator"></i> Impact Calculator</a>
+                    <a href="#home" class="nav-link font-medium"><i class="fas fa-home"></i>Home</a>
+                    <a href="About.html" class="nav-link font-medium"><i class="fas fa-home"></i>About</a>
+                    <a href="assessment.html" class="nav-link font-medium"><i class="fas fa-chalkboard-teacher"></i> Assessment</a>
+                    <a href="calculator.html" class="nav-link font-medium"><i class="fas fa-calculator"></i> Impact Calculator</a>
                     <div class="dropdown">
-                        <a href="resources.html" class="nav-link font-medium dark-nav-text flex items-center"><i class="fas fa-book"></i>
+                        <a href="resources.html" class="nav-link font-medium flex items-center"><i class="fas fa-book"></i>
                             Resources <i class="fas fa-chevron-down text-xs ml-2"></i>
                         </a>
                         <div class="dropdown-menu">
-                            <a href="resources.html#courses" class="block dark-nav-text hover:bg-white/10">Online Courses</a>
-                            <a href="resources.html#map" class="block dark-nav-text hover:bg-white/10">Initiatives Map</a>
-                            <a href="resources.html#jobs" class="block dark-nav-text hover:bg-white/10">Green Jobs</a>
+                            <a href="resources.html#courses" class="block hover:bg-white/10">Online Courses</a>
+                            <a href="resources.html#map" class="block hover:bg-white/10">Initiatives Map</a>
+                            <a href="resources.html#jobs" class="block hover:bg-white/10">Green Jobs</a>
                         </div>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                     <button onclick="window.location.href='assessment.html'" class="btn-primary px-6 py-2 rounded-full font-medium">Get Started</button>
                 </div>
                 <!-- Hamburger Menu -->
-                <div class="md:hidden flex items-center dark-nav-text">
+                <div class="md:hidden flex items-center">
                     <button id="hamburger-btn" class="text-2xl" aria-label="Toggle Menu">
                         <i class="fas fa-bars"></i>
                     </button>
@@ -53,14 +53,14 @@
             <!-- Mobile Menu -->
             <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
                 <a href="#home" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Home</a>
-                <a href="About.html" class="nav-link font-medium dark-nav-text">About</a>
+                <a href="About.html" class="nav-link font-medium">About</a>
                 <a href="assessment.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Assessment</a>
                 <a href="calculator.html" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Impact Calculator</a>
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="w-full text-left flex items-center justify-between py-2 px-4 text-sm hover:bg-green-100 rounded">
+                <div class="relative">
+                    <button id="resources-btn" class="w-full text-left flex items-center justify-between py-2 px-4 text-sm hover:bg-green-100 rounded">
                         Resources <i class="fas fa-chevron-down text-xs"></i>
                     </button>
-                    <div x-show="open" @click.away="open = false" class="mt-2 pl-4 space-y-2" style="display: none;">
+                    <div id="resources-menu" class="hidden mt-2 pl-4 space-y-2">
                         <a href="resources.html#courses" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Online Courses</a>
                         <a href="resources.html#map" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Initiatives Map</a>
                         <a href="resources.html#jobs" class="block py-2 px-4 text-sm hover:bg-green-100 rounded">Green Jobs</a>
@@ -79,7 +79,7 @@
                 <h1 class="font-display text-6xl md:text-8xl font-bold text-white mb-6 leading-tight">
                     <span class="stagger-fade">Building Green Skills</span>
                 </h1>
-                <p class="font-script text-3xl text-white/90 mb-4 stagger-fade text-sunset-orange">
+                <p class="font-script text-3xl text-white/90 mb-4 stagger-fade">
                     Empowering a Sustainable Tomorrow
                 </p>
                 <p class="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl stagger-fade">
@@ -112,18 +112,13 @@
                 <span class="text-xl">💧</span>
             </div>
         </div>
-        <div class="absolute top-1/2 right-1/4 floating-element delay--4s">
-            <div class="w-14 h-14 bg-blue-500/30 rounded-full flex items-center justify-center">
-                <span class="text-xl">🏡</span>
-            </div>
-        </div>
     </section>
 
     <!-- Skills Overview Section -->
     <section class="py-20">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="font-display text-5xl font-bold mb-6 stagger-fade heading-forest-green">
+                <h2 class="font-display text-5xl font-bold mb-6 stagger-fade">
                     Master Essential Green Skills
                 </h2>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto stagger-fade">
@@ -137,7 +132,7 @@
                     <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mb-6">
                         <span class="text-2xl">☀️</span>
                     </div>
-                    <h3 class="font-display text-2xl font-bold mb-4 heading-forest-green">Renewable Energy</h3>
+                    <h3 class="font-display text-2xl font-bold mb-4">Renewable Energy</h3>
                     <p class="text-gray-600 mb-6">Master solar, wind, and hydro power technologies. Learn installation, maintenance, and energy management for Ghana's growing renewable sector.</p>
                     <div class="flex items-center justify-between">
                         <span class="text-sm font-medium text-gray-500">12 Learning Modules</span>
@@ -149,7 +144,7 @@
                     <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mb-6">
                         <span class="text-2xl">🌱</span>
                     </div>
-                    <h3 class="font-display text-2xl font-bold mb-4 heading-forest-green">Sustainable Agriculture</h3>
+                    <h3 class="font-display text-2xl font-bold mb-4">Sustainable Agriculture</h3>
                     <p class="text-gray-600 mb-6">Climate-smart farming techniques, soil conservation, and crop optimization for Ghana's agricultural communities.</p>
                     <div class="flex items-center justify-between">
                         <span class="text-sm font-medium text-gray-500">8 Learning Modules</span>
@@ -161,7 +156,7 @@
                     <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mb-6">
                         <span class="text-2xl">♻️</span>
                     </div>
-                    <h3 class="font-display text-2xl font-bold mb-4 heading-forest-green">Waste Management</h3>
+                    <h3 class="font-display text-2xl font-bold mb-4">Waste Management</h3>
                     <p class="text-gray-600 mb-6">Circular economy principles, recycling technologies, and waste-to-energy solutions for sustainable communities.</p>
                     <div class="flex items-center justify-between">
                         <span class="text-sm font-medium text-gray-500">10 Learning Modules</span>
@@ -173,7 +168,7 @@
                     <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center mb-6">
                         <span class="text-2xl">🏗️</span>
                     </div>
-                    <h3 class="font-display text-2xl font-bold mb-4 heading-forest-green">Green Construction</h3>
+                    <h3 class="font-display text-2xl font-bold mb-4">Green Construction</h3>
                     <p class="text-gray-600 mb-6">Sustainable building materials, energy-efficient design, and green infrastructure development.</p>
                     <div class="flex items-center justify-between">
                         <span class="text-sm font-medium text-gray-500">6 Learning Modules</span>
@@ -185,7 +180,7 @@
                     <div class="w-16 h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center mb-6">
                         <span class="text-2xl">🌍</span>
                     </div>
-                    <h3 class="font-display text-2xl font-bold mb-4 heading-forest-green">Climate Resilience</h3>
+                    <h3 class="font-display text-2xl font-bold mb-4">Climate Resilience</h3>
                     <p class="text-gray-600 mb-6">Climate adaptation strategies, disaster preparedness, and community resilience building.</p>
                     <div class="flex items-center justify-between">
                         <span class="text-sm font-medium text-gray-500">9 Learning Modules</span>
@@ -197,7 +192,7 @@
                     <div class="w-16 h-16 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center mb-6">
                         <span class="text-2xl">💡</span>
                     </div>
-                    <h3 class="font-display text-2xl font-bold mb-4 heading-forest-green">Green Entrepreneurship</h3>
+                    <h3 class="font-display text-2xl font-bold mb-4">Green Entrepreneurship</h3>
                     <p class="text-gray-600 mb-6">Business development, green innovation, and sustainable enterprise creation for economic growth.</p>
                     <div class="flex items-center justify-between">
                         <span class="text-sm font-medium text-gray-500">7 Learning Modules</span>
@@ -265,7 +260,7 @@
     <section class="py-20">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="font-display text-5xl font-bold mb-6 stagger-fade heading-forest-green">
+                <h2 class="font-display text-5xl font-bold mb-6 stagger-fade">
                     Success Stories
                 </h2>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto stagger-fade">
@@ -281,7 +276,7 @@
                                 <div class="flex items-center mb-6">
                                     <img src="person image.png" alt="Solar Installation" class="w-20 h-20 rounded-full object-cover mr-4">
                                     <div>
-                                        <h3 class="font-display text-xl font-bold heading-forest-green">Abena Osei</h3>
+                                        <h3 class="font-display text-xl font-bold">Abena Osei</h3>
                                         <p class="text-gray-600">Solar Energy Entrepreneur</p>
                                     </div>
                                 </div>
@@ -302,7 +297,7 @@
                                 <div class="flex items-center mb-6">
                                     <img src="person image.png" alt="Sustainable Farming" class="w-20 h-20 rounded-full object-cover mr-4">
                                     <div>
-                                        <h3 class="font-display text-xl font-bold heading-forest-green">Kwame Asante</h3>
+                                        <h3 class="font-display text-xl font-bold">Kwame Asante</h3>
                                         <p class="text-gray-600">Climate-Smart Farmer</p>
                                     </div>
                                 </div>
@@ -323,7 +318,7 @@
                                 <div class="flex items-center mb-6">
                                     <img src="person image.png" alt="Conservation Work" class="w-20 h-20 rounded-full object-cover mr-4">
                                     <div>
-                                        <h3 class="font-display text-xl font-bold heading-forest-green">Fatima Alhassan</h3>
+                                        <h3 class="font-display text-xl font-bold">Fatima Alhassan</h3>
                                         <p class="text-gray-600">Wildlife Conservationist</p>
                                     </div>
                                 </div>
