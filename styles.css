@@ -54,7 +54,7 @@ body.dark-mode {
 .glass-nav {
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    background: rgba(47, 47, 47, 0.8);
+    background: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
@@ -157,7 +157,7 @@ body.dark-mode {
     position: absolute;
     top: 100%;
     left: 0;
-    background: rgba(47, 47, 47, 0.95);
+    background: white;
     border-radius: 0.5rem;
     padding: 0.5rem 0;
     min-width: 200px;
